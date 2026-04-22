@@ -1,0 +1,19 @@
+{
+    "Chunker": {
+      "type": "SentenceChunkerFunction"
+      },
+    "Cleaner": {
+      "type": "NoClean"
+    },
+    "SentimentAnalyzer": {
+      "type": "SAwithAttention",
+      "model": "distilbert"
+    },
+    "KeywordExtractor": {
+      "type": "KEwithLLM",
+      "runner": {
+        "type": "OllamaRunner",
+        "model": "llama3"
+      }
+    }
+  }

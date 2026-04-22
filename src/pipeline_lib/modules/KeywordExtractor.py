@@ -4,18 +4,18 @@ class KeywordExtractor(abc.ABC):
         @abc.abstractmethod
         def run(self): pass
 
-class KEwithLLM:
-    def _init_(self, runner, prompt=None, max_tokens=None):    
+class KEwithLLM(KeywordExtractor):
+    def __init__(self, runner, prompt=None, max_tokens=None):    
         self.prompt=prompt
         self.max_tokents=max_tokens
         self.runner=runner
 
-    @classmethod
-    def run(self):
+    def run(self, data):
         print("Run keyword extractor with LLM")
+        return data
 
-class KEwithKeyBERT:
-    def _init_(self, embedding_model, top_n, keyphrase_size, stopwords, min_df, runner, prompt=None, seed_keywords=None, use_maxsum=None, use_mmr=None, diversity=None, nr_candidates=None):
+class KEwithKeyBERT(KeywordExtractor):
+    def __init__(self, embedding_model, top_n, keyphrase_size, stopwords, min_df, runner, prompt=None, seed_keywords=None, use_maxsum=None, use_mmr=None, diversity=None, nr_candidates=None):
         self.embedding_model=embedding_model
         self.top_n=top_n
         self.keyphrase_size=keyphrase_size
@@ -28,8 +28,7 @@ class KEwithKeyBERT:
         self.use_mmr=use_mmr
         self.diversity=diversity
         self.nr_candidates=nr_candidates
-
         
-    @classmethod
-    def run(self):
+    def run(self, data):
         print("Run KEwithKeyBERT")
+        return data

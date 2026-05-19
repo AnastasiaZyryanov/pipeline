@@ -1,0 +1,4 @@
+tests/
+.venv/
+data/comments_test.csv
+data/output.json

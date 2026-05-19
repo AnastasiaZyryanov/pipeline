@@ -1,0 +1,31 @@
+{
+    "Chunker": {
+    "type": "SemanticChunkerFunction",
+    "embedding_model": "all-MiniLM-L6-v2",
+    "percentile": 50,
+    "overlap": 0
+  },
+    "Cleaner": {
+      "type": "CleanerWithScript",
+      "script": "scripts/clean.py",
+      "entrypoint": "clean"
+    },
+    "SentimentAnalyzer": {
+    "type": "SAwithAttention",
+    "model": "cardiffnlp/twitter-roberta-base-sentiment-latest"
+  },
+    "KeywordExtractor": {
+    "type": "KEwithKeyBERT",
+    "system_prompt": "SYSTEM = \"\"\"You extract keywords from texts. Here are some examples:\\n- The quick brown fox jumps over the lazy dog. --> quick, brown fox, lazy dog\\n- Artificial intelligence and machine learning are transforming the tech industry. --> artificial intelligence, machine learning, tech industry\\n- Climate change is a pressing global issue that requires immediate action. --> climate change, global issue, immediate action\\n- The Mona Lisa is a famous painting by Leonardo da Vinci located in the Louvre Museum. --> Mona Lisa, Leonardo da Vinci, Louvre Museum\"\"\"\\n\\n", 
+    "user_template": "USER = \"\"\"Extract some keywords from the following text which best summarize its content.\\nReturn ONLY the keywords separated by commas without any explanation or reasoning.\\nTo help you to understand the context, I am providing you some tipycal abbreviations and jargon used in this field:\\n- DS (and related variants like D.S., ds, etc.): Death Stranding\\n- MGS: Metal Gear Solid\\n- TLOS: The Last of Us\\n- BOTW: The Legend of Zelda: Breath of the Wild\\n- BB: Bridge Baby (a game element used in DS)\\n- BT: Beached Thing (another game element used in DS)\\n- RDR: Red Dead Redemption\\nPlease avoid these keywords: 'game', 'video game', 'player', 'game mechanichs'.\\nConverts any acronym to its full form.\\n\\nText: {text}\"\"\"",
+    "embedding_model": "all-MiniLM-L6-v2",
+    "top_n": 5,
+    "keyphrase_size": 2,
+    "stopwords": "english",
+    "min_df": 1,
+    "use_maxsum": true,
+    "use_mmr": true,
+    "diversity": 0.7,
+    "nr_candidates": 20
+    }
+}

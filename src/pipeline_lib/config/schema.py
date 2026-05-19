@@ -27,9 +27,9 @@ PIPELINE_SCHEMA = {
           {
             "type": "object",
             "properties": {
-              "type": { "const": "OllamaRunner" },
-              "gpu": { "type": "string" },
-              "port": { "type": "string" }
+              "type": { "const": "OllamaRunner" }
+             # "gpu": { "type": "string" },
+             # "port": { "type": "string" }
             },
             "required": ["type"]            
           }
@@ -70,9 +70,9 @@ PIPELINE_SCHEMA = {
           "embedding_model": { "type": "string" },
           "percentile": { "type": "number" },
           "overlap": { "type": "integer" },
-          "sentence_chunker": { "$ref": "#/$defs/SentenceChunker" }
+          #"sentence_chunker": { "$ref": "#/$defs/SentenceChunker" }
         },
-        "required": ["type", "embedding_model", "percentile", "overlap", "sentence_chunker"]
+        "required": ["type", "embedding_model", "percentile", "overlap"]#, "sentence_chunker"]
       },
       "Chunker": {
         "oneOf": [
@@ -94,7 +94,7 @@ PIPELINE_SCHEMA = {
           "script": { "type": "string" },
           "entrypoint": { "type": "string" }
         },
-        "required": ["type", "script"]
+        "required": ["type", "script","entrypoint"]
       },
       "Cleaner": {
         "oneOf": [
@@ -106,9 +106,11 @@ PIPELINE_SCHEMA = {
         "type": "object",
         "properties": {
           "type": { "const": "SAwithLLM" },
-          "prompt": { "type": "string" },
+          "system_prompt": { "type": "string" },
+          "user_template": { "type": "string" },
           "max_tokens": { "type": "integer" },
           "generated_responses": { "type": "integer" },
+          "temperature": {"type": "number"},
           "runner": { "$ref": "#/$defs/LLMRunner" }
         },
         "required": ["type", "generated_responses", "runner"]        
@@ -131,7 +133,8 @@ PIPELINE_SCHEMA = {
         "type": "object",
         "properties": {
           "type": { "const": "KEwithLLM" },
-          "prompt": { "type": "string" },
+          "system_prompt": { "type": "string" },
+          "user_template": { "type": "string" },
           "max_tokens": { "type": "integer" },
           "runner": { "$ref": "#/$defs/LLMRunner" }
         },
@@ -141,7 +144,8 @@ PIPELINE_SCHEMA = {
         "type": "object",
         "properties": {
           "type": { "const": "KEwithKeyBERT" },
-          "prompt": { "type": "string" },
+          "system_prompt": { "type": "string" },
+          "user_template": { "type": "string" },
           "seed_keywords": { "type": "string" },
           "embedding_model": { "type": "string" },
           "top_n": { "type": "integer" },
@@ -151,10 +155,9 @@ PIPELINE_SCHEMA = {
           "use_maxsum": { "type": "boolean" },
           "use_mmr": { "type": "boolean" },
           "diversity": { "type": "number" },
-          "nr_candidates": { "type": "integer" },
-          "runner": { "$ref": "#/$defs/LLMRunner" }
+          "nr_candidates": { "type": "integer" }          
         },
-        "required": ["type", "embedding_model", "top_n", "keyphrase_size", "stopwords", "min_frequency", "runner"]
+        "required": ["type", "embedding_model", "top_n", "keyphrase_size", "stopwords", "min_df"]
       },
       "KeywordExtractor": {
         "oneOf": [

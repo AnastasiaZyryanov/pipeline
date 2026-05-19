@@ -7,6 +7,8 @@ src/pipeline.egg-info/requires.txt
 src/pipeline.egg-info/top_level.txt
 src/pipeline_lib/__init__.py
 src/pipeline_lib/runner.py
+src/pipeline_lib/utils.py
+src/pipeline_lib/vllm_server.py
 src/pipeline_lib/config/schema.py
 src/pipeline_lib/config/validator.py
 src/pipeline_lib/core/builder.py

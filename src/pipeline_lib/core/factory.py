@@ -90,14 +90,6 @@ MODULE_REGISTRY = {
 
 def create_module(config):
     module_type = config["type"]
-    if module_type == "SemanticChunkerFunction":
-        sentence_chunker = create_module(config=["sentence_chunker"])
-        return SemanticChunkerFunction(
-            embedding_model=config["embedding_model"],
-            percentile=config["percentile"],
-            overlap=config["overlap"],
-            sentence_chunker=sentence_chunker,
-        )
     if module_type == "SAwithLLM":
         runner = create_module(config["runner"])
         return SAwithLLM(

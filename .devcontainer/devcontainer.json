@@ -1,0 +1,59 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/python
+{
+	"name": "Python 3",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/python:3-3.14-trixie",
+	"features": {
+		"ghcr.io/devcontainers-extra/features/uv:1": {}
+	},
+
+	"containerEnv": {
+		"UV_LINK_MODE": "copy",
+		"NVIDIA_VISIBLE_DEVICES": "7",
+		"HF_HOME": "/huggingface"
+	},
+
+	"runArgs": [
+        "--name", "sentiment-pipeline-azyryanova-modis-7", "--runtime", "nvidia"
+	],
+
+	"mounts": [
+		{"source": "${localEnv:HOME}/hf_cache", "target": "/huggingface", "type": "bind"}
+	],
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"ms-python.isort",
+				"ms-python.autopep8",
+				"ms-python.vscode-pylance",
+				"ms-toolsai.jupyter"
+			],
+
+			"settings": {
+				"[python]": {
+      				"editor.defaultFormatter": "ms-python.autopep8"
+    			}
+			}
+		}
+	},
+
+	"postCreateCommand": "uv sync"
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "pip3 install --user -r requirements.txt",
+
+	// Configure tool-specific properties.
+	// "customizations": {},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}

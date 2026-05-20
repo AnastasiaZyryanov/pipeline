@@ -1,4 +1,9 @@
 tests/
 .venv/
+venv/
+env/
 data/comments_test.csv
 data/output.json
+__pycache__/
+*.pyc
+*.pyo

@@ -1,9 +1,9 @@
 {
     "Chunker": {
-    "type": "SemanticChunkerFunction",
-    "embedding_model": "all-MiniLM-L6-v2",
-    "percentile": 50,
-    "overlap": 0
+      "type": "SemanticChunkerFunction",
+      "embedding_model": "all-MiniLM-L6-v2",
+      "percentile": 85,
+      "overlap":  1
   },
     "Cleaner": {
       "type": "CleanerWithScript",

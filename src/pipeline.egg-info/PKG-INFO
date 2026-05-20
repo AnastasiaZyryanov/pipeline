@@ -18,4 +18,5 @@ Requires-Dist: scikit-learn>=1.8.0
 Requires-Dist: sentence-transformers>=5.4.1
 Requires-Dist: torch>=2.11.0
 Requires-Dist: transformers>=5.8.0
-Requires-Dist: vllm>=0.21.0
+Requires-Dist: vllm>=0.21.0; sys_platform == "linux"
+Requires-Dist: tokenspeed-mla>=0.1.2; sys_platform == "linux"

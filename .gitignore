@@ -7,3 +7,4 @@ data/output.json
 __pycache__/
 *.pyc
 *.pyo
+uv.lock

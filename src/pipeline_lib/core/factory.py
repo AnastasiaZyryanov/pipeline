@@ -56,12 +56,14 @@ MODULE_REGISTRY = {
             )
     ),
     "SentenceChunkerFunction": lambda cfg: SentenceChunkerFunction(
-        language=cfg.get("language")
+        language=cfg.get("language"),
+        max_tokens=cfg.get("max_tokens", 350)        
     ),
     "SemanticChunkerFunction": lambda cfg: SemanticChunkerFunction(
         embedding_model=cfg["embedding_model"],
         percentile=cfg["percentile"],
         overlap=cfg["overlap"],
+        max_tokens=cfg.get("max_tokens", 350)
         #sentence_chunker=sentence_chunker,
     ),
     "NoClean": lambda cfg: NoClean(),

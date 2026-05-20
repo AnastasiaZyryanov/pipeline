@@ -59,7 +59,8 @@ PIPELINE_SCHEMA = {
         "type": "object",
         "properties": {
           "type": { "const": "SentenceChunkerFunction" },
-          "language": { "type": "string" }
+          "language": { "type": "string" },
+          "max_tokens": {"type": "string"}   
         },
         "required": ["type"]
       },
@@ -70,6 +71,7 @@ PIPELINE_SCHEMA = {
           "embedding_model": { "type": "string" },
           "percentile": { "type": "number" },
           "overlap": { "type": "integer" },
+          "max_tokens": {"type": "string"}   
           #"sentence_chunker": { "$ref": "#/$defs/SentenceChunker" }
         },
         "required": ["type", "embedding_model", "percentile", "overlap"]#, "sentence_chunker"]

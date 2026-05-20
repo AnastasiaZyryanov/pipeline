@@ -58,6 +58,7 @@ class SAwithAttention(SentimentAnalyzer):
             "sentiment-analysis",
             model=model,
             truncation=True
+           # max_length=512 #will loose some information
         )
                 
     def run(self, data):

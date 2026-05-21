@@ -20,8 +20,12 @@ class VLLMServerContextManager(ContextDecorator):
         self.process = subprocess.Popen([
             "vllm", "serve", self.model,
             "--port", str(self.port),
-            "--gpu-memory-utilization", "0.25"  
-        ], stdout=std_out, stderr=std_err, env={**os.environ, "CUDA_VISIBLE_DEVICES": str(self.device)})
+            "--gpu-memory-utilization", "0.9"  
+        ], 
+        stdout=std_out, 
+        stderr=std_err, 
+        env={**os.environ, "CUDA_VISIBLE_DEVICES": str(self.device)}
+        )
 
         while not self.__wait_until_ready():
             time.sleep(10)
@@ -47,5 +51,5 @@ class VLLMServerContextManager(ContextDecorator):
         if self.process:
             self.process.terminate()
             self.process.wait()
-            print(f"VLLM server for model {self.model_name} on port {self.port} has been terminated.")
+            print(f"VLLM server for model {self.model} on port {self.port} has been terminated.")
         return False

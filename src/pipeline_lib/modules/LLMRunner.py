@@ -45,4 +45,4 @@ class VLLMRunner(LLMRunner):
     def generate(self, documents, system_prompt, user_template, max_tokens, temperature=0):
         with VLLMServerContextManager(model=self.model, device=self.gpu, port=self.port)  as vllm_process: #as server:
             client = openai.OpenAI(base_url=f"http://localhost:{self.port}/v1", api_key=self.api_key or "EMPTY")
-        return list(callGenerator(client, self.model, documents, system_prompt, user_template, max_tokens, temperature))
+            return list(callGenerator(client, self.model, documents, system_prompt, user_template, max_tokens, temperature))

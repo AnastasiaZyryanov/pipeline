@@ -1,3 +1,11 @@
+import os
+from pathlib import Path
+
+project_root = Path(__file__).parent.parent  
+hf_cache = project_root / ".hf_cache"
+hf_cache.mkdir(exist_ok=True)
+os.environ['HF_HOME'] = str(hf_cache)
+
 import json
 import pandas as pd
 from pipeline_lib.core.builder import build_pipeline

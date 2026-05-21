@@ -57,8 +57,8 @@ class SAwithAttention(SentimentAnalyzer):
         self.classifier = pipeline(
             "sentiment-analysis",
             model=model,
-            truncation=True
-           # max_length=512 #will loose some information
+            truncation=True,
+            max_length = 512
         )
                 
     def run(self, data):

@@ -18,11 +18,9 @@ class VLLMServerContextManager(ContextDecorator):
         std_err = open(f"logs/vllm_server_{self.model.replace('/', '_')}_port{self.port}_error.log", "w")
 
         self.process = subprocess.Popen([
-            "vllm",
-            "serve",
-            self.model,
-            "--port",
-            str(self.port)
+            "vllm", "serve", self.model,
+            "--port", str(self.port),
+            "--gpu-memory-utilization", "0.25"  
         ], stdout=std_out, stderr=std_err, env={**os.environ, "CUDA_VISIBLE_DEVICES": str(self.device)})
 
         while not self.__wait_until_ready():

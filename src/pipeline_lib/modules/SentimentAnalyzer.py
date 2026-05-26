@@ -1,9 +1,10 @@
 import abc
 from transformers import pipeline
 from collections import Counter
+from ..core.module_base import PipelineModule
+from ..utils import log_progress
 
-class SentimentAnalyzer(abc.ABC):
-        @abc.abstractmethod
+class SentimentAnalyzer(PipelineModule):
         def run(self): pass
 
 class SAwithLLM(SentimentAnalyzer):
@@ -17,6 +18,12 @@ class SAwithLLM(SentimentAnalyzer):
 
     def run(self, data):
         print("Run sentiment analyzer with LLM")
+
+        if self.runner is None:
+            raise ValueError("Runner is not initialized")
+
+        print("RUNNER:", self.runner)
+        print("CLIENT:", getattr(self.runner, "client", None))
              
         documents = data["chunk"].astype(str).tolist()
 
@@ -35,15 +42,23 @@ class SAwithLLM(SentimentAnalyzer):
                     user_template=self.user_template,
                     max_tokens=self.max_tokens,
                     temperature=self.temperature
-                    )[0]
+                    )[0]            
                 responses.append(resp)
-                most_common = Counter(responses).most_common(1)[0][0]
-                results.append(most_common)
+            most_common = Counter(responses).most_common(1)[0][0]
+            results.append(most_common)
+                 
+            self.pipeline.stats["chunks_processed"] += 1
+
+            if self.pipeline.stats["chunks_processed"] % 50 == 0:
+                    log_progress(self.pipeline)
             
         data = data.copy()             
         data["sentiment"] = results
 
         return data
+    
+    def get_runner(self):
+        return self.runner
 
 class SAwithAttention(SentimentAnalyzer):
     def __init__(self, model):

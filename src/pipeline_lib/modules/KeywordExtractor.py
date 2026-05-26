@@ -1,20 +1,28 @@
 import abc
 from keybert import KeyBERT
 from sentence_transformers import SentenceTransformer
+from ..core.module_base import PipelineModule
+from ..utils import log_progress
 
-class KeywordExtractor(abc.ABC):
-        @abc.abstractmethod
+class KeywordExtractor(PipelineModule):
         def run(self): pass
 
 class KEwithLLM(KeywordExtractor):
     def __init__(self, runner, system_prompt=None, user_template=None, max_tokens=None):    
         self.system_prompt=system_prompt
         self.user_template=user_template
-        self.max_tokents=max_tokens
+        self.max_tokens=max_tokens
         self.runner=runner
 
     def run(self, data):
-        print("Run keyword extractor with LLM")        
+        print("Run keyword extractor with LLM")   
+
+        if self.runner is None:
+            raise ValueError("Runner is not initialized")
+
+        print("RUNNER:", self.runner)
+        print("CLIENT:", getattr(self.runner, "client", None))
+
         documents = data["chunk"].astype(str).tolist()
         
         results = self.runner.generate(
@@ -23,9 +31,18 @@ class KEwithLLM(KeywordExtractor):
             user_template=self.user_template,
             max_tokens=self.max_tokens
         )
+
+        self.pipeline.stats["chunks_processed"] += len(documents)
+
+        if self.pipeline.stats["chunks_processed"] % 50 == 0:
+                    log_progress(self.pipeline)
+
         data = data.copy()             
-        data["keyword"] = results
+        data["keywords"] = results
         return data    
+    
+    def get_runner(self):
+        return self.runner
           
 class KEwithKeyBERT(KeywordExtractor):
     def __init__(self, embedding_model, top_n, keyphrase_size, stopwords, min_df, system_prompt=None, user_template=None, seed_keywords=None, 
@@ -65,6 +82,6 @@ class KEwithKeyBERT(KeywordExtractor):
 
             all_keywords.append(keywords)
 
-        data["keyword"] = all_keywords
+        data["keywords"] = all_keywords
 
         return data

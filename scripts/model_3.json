@@ -13,14 +13,14 @@
         "type": "VLLMRunner",
         "gpu": "0",
         "port": "8000",
-        "model": "facebook/opt-125m",
+        "model": "microsoft\/phi-4",
         "api_key": "EMPTY"         
       },
       "generated_responses":10,  
       "max_tokens":8,  
       "system_prompt": "SYSTEM = \"\"\"You classify sentiments of a text. Here are some examples:\\n- I hated the story. --> Very Negative\\n- 100% go to Iceland, absolutely love it there! This was land a sheep farmer owned that we met. --> Very Positive\\n- I found it very comforting. --> Positive\\n- The game is truly connecting ;) --> Positive\\n- The owner doesn't give a fuck what happens as long as he makes money, the mods might as well be dead --> Negative\\n- It ruins the fun --> Negative\\n\"\"\"\\n\\n",
       "user_template": "USER = \"\"\"Classify the following text into one of these sentiments [Very Negative, Negative, Neutral, Positive, Very Positive].\\nReturn ONLY the label without any explanation or reasoning.\\nText: {text}\"\"\""
-    },
+    },    
     "KeywordExtractor": {
     "type": "KEwithKeyBERT",
     "system_prompt": "SYSTEM = \"\"\"You extract keywords from texts. Here are some examples:\\n- The quick brown fox jumps over the lazy dog. --> quick, brown fox, lazy dog\\n- Artificial intelligence and machine learning are transforming the tech industry. --> artificial intelligence, machine learning, tech industry\\n- Climate change is a pressing global issue that requires immediate action. --> climate change, global issue, immediate action\\n- The Mona Lisa is a famous painting by Leonardo da Vinci located in the Louvre Museum. --> Mona Lisa, Leonardo da Vinci, Louvre Museum\"\"\"\\n\\n", 

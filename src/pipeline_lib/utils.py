@@ -41,8 +41,9 @@ def datasetIterator(documents: list[str], system_prompt, user_template):
 
 def callGenerator(client, model, documents: list[str], system_prompt, user_template, max_tokens, temperature=0):
     iterator = datasetIterator(documents, system_prompt, user_template)
-    bar = tqdm(iterator, total=len(documents))
-    for doc in bar:
+   # bar = tqdm(iterator, total=len(documents))
+   # for doc in bar:
+    for doc in iterator:
         response = client.chat.completions.create(
             model=model,
             messages=doc,
@@ -50,5 +51,11 @@ def callGenerator(client, model, documents: list[str], system_prompt, user_templ
             temperature=temperature
         )
         result = response.choices[0].message.content
-        bar.set_postfix(result=result)
+      #  bar.set_postfix(result=result)
         yield result
+
+def log_progress(pipeline):
+    print(
+        f"[PROGRESS] "
+        f"{pipeline.stats['chunks_processed']} / {pipeline.stats['chunks_total']}"
+    )

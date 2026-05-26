@@ -1,9 +1,8 @@
 import abc
 from ..utils import load_function_from__file
+from ..core.module_base import PipelineModule
 
-
-class Cleaner(abc.ABC):
-    @abc.abstractmethod
+class Cleaner(PipelineModule):
     def run(self): pass
 
 class NoClean(Cleaner):

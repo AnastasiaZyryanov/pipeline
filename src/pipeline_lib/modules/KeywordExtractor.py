@@ -1,4 +1,3 @@
-import abc
 from keybert import KeyBERT
 from sentence_transformers import SentenceTransformer
 from ..core.module_base import PipelineModule
@@ -32,10 +31,10 @@ class KEwithLLM(KeywordExtractor):
             max_tokens=self.max_tokens
         )
 
-        self.pipeline.stats["chunks_processed"] += len(documents)
+        # self.pipeline.stats["chunks_processed"] += len(documents)
 
-        if self.pipeline.stats["chunks_processed"] % 50 == 0:
-                    log_progress(self.pipeline)
+        # if self.pipeline.stats["chunks_processed"] % 50 == 0:
+        #             log_progress(self.pipeline)
 
         data = data.copy()             
         data["keywords"] = results

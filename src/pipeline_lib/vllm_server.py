@@ -12,7 +12,7 @@ class VLLMServerContextManager(ContextDecorator):
         self.process = None
 
     def __enter__(self):
-        print("Starting vLLM server for model {self.model}...")
+        print(f"Starting vLLM server for model {self.model}...")
         os.makedirs("logs", exist_ok=True)
         std_out = open(f"logs/vllm_server_{self.model.replace('/', '_')}_port{self.port}.log", "w")
         std_err = open(f"logs/vllm_server_{self.model.replace('/', '_')}_port{self.port}_error.log", "w")

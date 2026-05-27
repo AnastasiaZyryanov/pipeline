@@ -39,20 +39,24 @@ def datasetIterator(documents: list[str], system_prompt, user_template):
             {"role": "user", "content": user_template.format(text=doc)}
         ]
 
-def callGenerator(client, model, documents: list[str], system_prompt, user_template, max_tokens, temperature=0):
+def callGenerator(client, model, documents: list[str], system_prompt, user_template, max_tokens, temperature=0.7, generated_responses=1):
     iterator = datasetIterator(documents, system_prompt, user_template)
-   # bar = tqdm(iterator, total=len(documents))
-   # for doc in bar:
-    for doc in iterator:
+    bar = tqdm(iterator, total=len(documents))
+    for doc in bar:
+   # for doc in iterator:
         response = client.chat.completions.create(
             model=model,
             messages=doc,
             max_tokens=max_tokens,
-            temperature=temperature
+            temperature=temperature,
+            n=generated_responses
         )
-        result = response.choices[0].message.content
-      #  bar.set_postfix(result=result)
-        yield result
+        sentiment_map = {'Very Negative': -2, 'Negative': -1, 'Neutral': 0, 'Positive': 1, 'Very Positive': 2}
+        response = np.nanmean([sentiment_map.get(choice.message.content, np.nan) for choice in response.choices])
+        bar.set_postfix(sentiment=response)
+        
+        #result = response.choices[0].message.content
+        yield response
 
 def log_progress(pipeline):
     print(

@@ -10,11 +10,8 @@
     "SentimentAnalyzer": {
       "type": "SAwithLLM",
       "runner": {  
-        "type": "VLLMRunner",
-        "gpu": "0",
-        "port": "8000",
-        "model": "microsoft\/phi-4",
-        "api_key": "EMPTY"         
+        "type": "OllamaRunner",
+        "model": "phi4"      
       },
       "generated_responses":1,  
       "max_tokens":3,  

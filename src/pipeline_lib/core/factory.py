@@ -4,58 +4,17 @@ from pipeline_lib.modules.SentimentAnalyzer import *
 from pipeline_lib.modules.KeywordExtractor import * 
 from pipeline_lib.modules.LLMRunner import * 
 
-
-# def create_module(config):
-#     match config["type"]:
-#         case "OllamaRunner":
-#             print("OllamaRunner")
-#             return OllamaRunner(model=config["model"],api_key=config.get("api_key"), seed=config.get("seed"), gpu=config.get("gpu"), port=config.get("port"))
-#         case "VLLMRunner":
-#             print("VLLMRunner")
-#             return VLLMRunner(model=config["model"],api_key=config.get("api_key"), seed=config.get("seed"), gpu=config.get("gpu"), port=config.get("port"))
-#         case "SentenceChunkerFunction":
-#             return SentenceChunkerFunction(language=config.get("language"))
-#         case "SemanticChunkerFunction":
-#             return SemanticChunkerFunction(embedding_model=config["embedding_model"], percentile=config["percentile"], overlap=config["overlap"], sentence_chunker=config["sentence_chunker"])
-#         case "NoClean":
-#             return NoClean()
-#         case "CleanerWithScript":
-#             return CleanerWithScript(script=config["script"], entrypoint=config["entrypoint"])
-#         case "SAwithLLM":
-#             runner = create_module(config["runner"])
-#             return SAwithLLM(generated_responses=config["generated_responses"], runner=runner, system_prompt=config.get("system_prompt"), user_template=config.get("user_template"), max_tokens=config.get("max_tokens"))
-#         case "SAwithAttention":
-#             return SAwithAttention(model=config.get("model"))
-#         case "KEwithLLM":
-#             runner = create_module(config["runner"])
-#             return KEwithLLM(runner=runner, system_prompt=config.get("system_prompt"), user_template=config.get("user_template"), max_tokens=config.get("max_tokens"))
-#         case "KEwithBERT":
-#             return KEwithKeyBERT(embedding_model=config["embedding_model"], top_n=config["top_n"], keyphrase_size=config["keyphrase_size"], min_df=config["min_df"], runner=config["runner"], system_prompt=config.get("system_prompt"), user_template=config.get("user_template"), seed_keywords=config.get("seed_keywords"), use_maxsum=config.get("use_maxsum"), use_mmr=config.get("use_mmr"), diversity=config.get("diversity"), nr_candidates=config.get("nr_candidates"))
-#         case _:
-#             raise ValueError("Unknown type")
-
-def create_ollama_runner(cfg):
-    print("Creating OllamaRunner")
-    runner = OllamaRunner(
-        model=cfg["model"],
-        api_key=cfg.get("api_key"),
-        seed=cfg.get("seed"),
-    )
-    print(f"Runner object created: {runner}, type: {type(runner)}")
-    return runner
-
 MODULE_REGISTRY = {
-    # "OllamaRunner": lambda cfg: (
-    #     print("Creating OllamaRunner") or
-    #     OllamaRunner(
-    #         model=cfg["model"],
-    #         api_key=cfg.get("api_key"),
-    #         seed=cfg.get("seed"),
-    #        # gpu=cfg.get("gpu"),
-    #        # port=cfg.get("port"),
-    #         )
-    # ),
-    "OllamaRunner": create_ollama_runner,
+    "OllamaRunner": lambda cfg: (
+        print("Creating OllamaRunner") or
+        OllamaRunner(
+            model=cfg["model"],
+            api_key=cfg.get("api_key"),
+            seed=cfg.get("seed"),
+           # gpu=cfg.get("gpu"),
+           # port=cfg.get("port"),
+            )
+    ),    
     "VLLMRunner": lambda cfg: (
         print("Creating VLLMRunner") or
         VLLMRunner(

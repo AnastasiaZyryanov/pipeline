@@ -1,4 +1,3 @@
-import abc
 from transformers import pipeline
 from collections import Counter
 from ..core.module_base import PipelineModule
@@ -28,30 +27,23 @@ class SAwithLLM(SentimentAnalyzer):
              
         documents = data["chunk"].astype(str).tolist()
 
-        n = self.generated_responses
+        generated_responses = self.generated_responses
     
-        if not isinstance(n, int) or n < 1:
+        if not isinstance(generated_responses, int) or generated_responses < 1:
             raise ValueError(f"generated_responses must be a positive integer")
         
-        results = []
-        for doc in documents:
-            responses = []
-            for _ in range(n):
-                resp = self.runner.generate(
-                    documents=[doc],
+        results = self.runner.generate(
+                    documents=documents,
                     system_prompt=self.system_prompt,
                     user_template=self.user_template,
                     max_tokens=self.max_tokens,
-                    temperature=self.temperature
-                    )[0]            
-                responses.append(resp)
-            most_common = Counter(responses).most_common(1)[0][0]
-            results.append(most_common)
-                 
-            self.pipeline.stats["chunks_processed"] += 1
+                    temperature=self.temperature,
+                    generated_responses=generated_responses
+                    )
+            # self.pipeline.stats["chunks_processed"] += 1
 
-            if self.pipeline.stats["chunks_processed"] % 50 == 0:
-                    log_progress(self.pipeline)
+            # if self.pipeline.stats["chunks_processed"] % 50 == 0:
+            #         log_progress(self.pipeline)
             
         data = data.copy()             
         data["sentiment"] = results

@@ -1,4 +1,3 @@
-#from contextlib import ExitStack
 from .vllm_server import VLLMServerContextManager
 from .modules.LLMRunner import VLLMRunner
 
@@ -36,16 +35,15 @@ class Pipeline:
             )
 
     def run(self, data):
-        # with ExitStack() as stack:
-        #     self._start_vllm_servers(stack)
-        #     self.data = data
-        #     for module in self.modules:
-        #         module.pipeline = self
-        #         data = module.run(data)        
+              
         self.data = data
         for module in self.modules:
             module.pipeline = self
             runner = module.get_runner()
+
+            if hasattr(module, 'runner') and module.runner is not None:
+                print(f"Using runner: {type(runner).__name__}")
+                print(f"Model: {runner.model}")     
 
             if isinstance(runner, VLLMRunner):
                 with VLLMServerContextManager(

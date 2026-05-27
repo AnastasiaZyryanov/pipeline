@@ -34,17 +34,28 @@ from pipeline_lib.modules.LLMRunner import *
 #         case _:
 #             raise ValueError("Unknown type")
 
+def create_ollama_runner(cfg):
+    print("Creating OllamaRunner")
+    runner = OllamaRunner(
+        model=cfg["model"],
+        api_key=cfg.get("api_key"),
+        seed=cfg.get("seed"),
+    )
+    print(f"Runner object created: {runner}, type: {type(runner)}")
+    return runner
+
 MODULE_REGISTRY = {
-    "OllamaRunner": lambda cfg: (
-        print("Creating OllamaRunner") or
-        OllamaRunner(
-            model=cfg["model"],
-            api_key=cfg.get("api_key"),
-            seed=cfg.get("seed"),
-           # gpu=cfg.get("gpu"),
-           # port=cfg.get("port"),
-            )
-    ),
+    # "OllamaRunner": lambda cfg: (
+    #     print("Creating OllamaRunner") or
+    #     OllamaRunner(
+    #         model=cfg["model"],
+    #         api_key=cfg.get("api_key"),
+    #         seed=cfg.get("seed"),
+    #        # gpu=cfg.get("gpu"),
+    #        # port=cfg.get("port"),
+    #         )
+    # ),
+    "OllamaRunner": create_ollama_runner,
     "VLLMRunner": lambda cfg: (
         print("Creating VLLMRunner") or
         VLLMRunner(

@@ -16,12 +16,22 @@ class LLMRunner(abc.ABC):
 
 class OllamaRunner(LLMRunner):
     def __init__(self, model, api_key=None, seed=None): #, gpu=None, port=None):
+        print(f"[DEBUG] Creating OllamaRunner with model={model}")
         super().__init__(model, api_key, seed) 
         # self.gpu=gpu
         # self.port=port
-        self.client = None
-        self._server = None
-    
+        self.client = ollama.Client()
+        self.ensure_model_exists()
+
+    def ensure_model_exists(self):
+        installed_models = [m["model"].split(':')[0] for m in ollama.list()["models"]]
+        print(f"[DEBUG] Installed models: {installed_models}")
+        print(f"[DEBUG] Looking for: {self.model}")
+
+        if self.model not in installed_models:
+            print(f"Pulling Ollama model: {self.model}")
+            ollama.pull(self.model)        
+
     def generate(self, documents, system_prompt, user_template, max_tokens, temperature=0):
         results = []
 
@@ -31,7 +41,8 @@ class OllamaRunner(LLMRunner):
             )
             results.append(response['response'].strip())
 
-        return results
+        return results   
+    
 
 class VLLMRunner(LLMRunner):
     def __init__(self, model, api_key=None, seed=None, gpu=None, port=None):

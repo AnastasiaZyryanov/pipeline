@@ -13,6 +13,7 @@ class SAwithLLM(SentimentAnalyzer):
         self.user_template=user_template
         self.generated_responses=generated_responses
         self.max_tokens=max_tokens
+        print(f"[SentimentAnalyzer] __init__ received runner: {runner}")
         self.runner=runner
         self.temperature=temperature
 

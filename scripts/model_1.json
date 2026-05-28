@@ -17,6 +17,7 @@
         "api_key": "EMPTY"         
       },
       "generated_responses":10,  
+      "temperature":0.7,
       "max_tokens":8,  
       "system_prompt": "SYSTEM = \"\"\"You classify sentiments of a text. Here are some examples:\\n- I hated the story. --> Very Negative\\n- 100% go to Iceland, absolutely love it there! This was land a sheep farmer owned that we met. --> Very Positive\\n- I found it very comforting. --> Positive\\n- The game is truly connecting ;) --> Positive\\n- The owner doesn't give a fuck what happens as long as he makes money, the mods might as well be dead --> Negative\\n- It ruins the fun --> Negative\\n\"\"\"\\n\\n",
       "user_template": "USER = \"\"\"Classify the following text into one of these sentiments [Very Negative, Negative, Neutral, Positive, Very Positive].\\nReturn ONLY the label without any explanation or reasoning.\\nText: {text}\"\"\""

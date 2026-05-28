@@ -20,6 +20,7 @@ Requires-Dist: torch==2.9.1
 Requires-Dist: transformers==4.56.1
 Requires-Dist: vllm==0.14.1; sys_platform == "linux"
 Requires-Dist: tokenspeed-mla>=0.1.2; sys_platform == "linux"
+Requires-Dist: huggingface-hub>=0.20.0
 
 ## Hugging Face' models cache
 Per risolvere i problemi con diritti sul server, script crea automaticamente la cartella '.hf_cache' nel root per salvare i modelli.

@@ -12,6 +12,7 @@ scikit-learn>=1.8.0
 sentence-transformers>=5.4.1
 torch==2.9.1
 transformers==4.56.1
+huggingface-hub>=0.20.0
 
 [:sys_platform == "linux"]
 vllm==0.14.1

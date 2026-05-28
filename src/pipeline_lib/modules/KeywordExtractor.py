@@ -1,7 +1,6 @@
 from keybert import KeyBERT
 from sentence_transformers import SentenceTransformer
 from ..core.module_base import PipelineModule
-from ..utils import log_progress
 
 class KeywordExtractor(PipelineModule):
         def run(self): pass
@@ -19,22 +18,14 @@ class KEwithLLM(KeywordExtractor):
         if self.runner is None:
             raise ValueError("Runner is not initialized")
 
-        print("RUNNER:", self.runner)
-        print("CLIENT:", getattr(self.runner, "client", None))
-
         documents = data["chunk"].astype(str).tolist()
         
-        results = self.runner.generate(
+        results = list(self.runner.generate(
             documents=documents,
             system_prompt=self.system_prompt,
             user_template=self.user_template,
             max_tokens=self.max_tokens
-        )
-
-        # self.pipeline.stats["chunks_processed"] += len(documents)
-
-        # if self.pipeline.stats["chunks_processed"] % 50 == 0:
-        #             log_progress(self.pipeline)
+        ))
 
         data = data.copy()             
         data["keywords"] = results

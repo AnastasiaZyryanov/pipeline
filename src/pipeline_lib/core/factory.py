@@ -70,6 +70,7 @@ def create_module(config):
             system_prompt=config.get("system_prompt"),
             user_template=config.get("user_template"),
             max_tokens=config.get("max_tokens"),
+            temperature=config.get("temperature"),
         )
     if module_type == "KEwithLLM":
         runner = create_module(config["runner"])

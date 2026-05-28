@@ -39,27 +39,36 @@ def datasetIterator(documents: list[str], system_prompt, user_template):
             {"role": "user", "content": user_template.format(text=doc)}
         ]
 
-def callGenerator(client, model, documents: list[str], system_prompt, user_template, max_tokens, temperature=0.7, generated_responses=1):
-    iterator = datasetIterator(documents, system_prompt, user_template)
+def callGenerator(client, model, documents: list[str], system_prompt, user_template, max_tokens=None, temperature=None, generated_responses=None):
+   
+    iterator = datasetIterator(documents, system_prompt, user_template)    
     bar = tqdm(iterator, total=len(documents))
-    for doc in bar:
-   # for doc in iterator:
-        response = client.chat.completions.create(
-            model=model,
-            messages=doc,
-            max_tokens=max_tokens,
-            temperature=temperature,
-            n=generated_responses
-        )
-        sentiment_map = {'Very Negative': -2, 'Negative': -1, 'Neutral': 0, 'Positive': 1, 'Very Positive': 2}
-        response = np.nanmean([sentiment_map.get(choice.message.content, np.nan) for choice in response.choices])
-        bar.set_postfix(sentiment=response)
+    for doc in bar:   
+        kwargs = {
+            "model": model,
+            "messages": doc
+        }    
+        if temperature is not None:
+            kwargs["temperature"] = temperature        
+        if generated_responses is not None:
+            kwargs["n"] = generated_responses
+        if max_tokens is not None:
+            kwargs["max_tokens"]= max_tokens
+
+        response = client.chat.completions.create(**kwargs)
+        response = [choice.message.content for choice in response.choices]
+        bar.set_postfix(result=response)        
         
-        #result = response.choices[0].message.content
         yield response
 
-def log_progress(pipeline):
-    print(
-        f"[PROGRESS] "
-        f"{pipeline.stats['chunks_processed']} / {pipeline.stats['chunks_total']}"
-    )
+def score_to_label(score):
+        if score <= -1.5:
+            return "Very Negative"
+        elif score <= -0.5:
+            return "Negative"
+        elif score < 0.5:
+            return "Neutral"
+        elif score < 1.5:
+            return "Positive"
+        else:
+            return "Very Positive"

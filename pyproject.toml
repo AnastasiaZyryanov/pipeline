@@ -21,6 +21,7 @@ dependencies = [
     "transformers==4.56.1",
     "vllm==0.14.1; sys_platform == 'linux'",
     "tokenspeed-mla>=0.1.2; sys_platform == 'linux'",
+    "huggingface-hub>=0.20.0",
 ]
 [tool.uv]
 package = true

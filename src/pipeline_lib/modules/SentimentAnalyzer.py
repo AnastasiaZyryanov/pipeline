@@ -1,35 +1,30 @@
 from transformers import pipeline
-from collections import Counter
 from ..core.module_base import PipelineModule
-from ..utils import log_progress
+import numpy as np
+from ..utils import score_to_label
 
 class SentimentAnalyzer(PipelineModule):
         def run(self): pass
 
 class SAwithLLM(SentimentAnalyzer):
-    def __init__(self, generated_responses, runner, system_prompt=None, user_template=None, max_tokens=None, temperature=0):    
+    def __init__(self, generated_responses, runner, system_prompt=None, user_template=None, max_tokens=None, temperature=None):    
         self.system_prompt=system_prompt
         self.user_template=user_template
         self.generated_responses=generated_responses
         self.max_tokens=max_tokens
-        print(f"[SentimentAnalyzer] __init__ received runner: {runner}")
         self.runner=runner
         self.temperature=temperature
-
+        
     def run(self, data):
         print("Run sentiment analyzer with LLM")
 
         if self.runner is None:
             raise ValueError("Runner is not initialized")
 
-        print("RUNNER:", self.runner)
-        print("CLIENT:", getattr(self.runner, "client", None))
-             
         documents = data["chunk"].astype(str).tolist()
-
-        generated_responses = self.generated_responses
-    
-        if not isinstance(generated_responses, int) or generated_responses < 1:
+           
+        #if not isinstance(self.generated_responses, int) or self.generated_responses < 1:
+        if self.generated_responses<1:
             raise ValueError(f"generated_responses must be a positive integer")
         
         results = self.runner.generate(
@@ -38,20 +33,26 @@ class SAwithLLM(SentimentAnalyzer):
                     user_template=self.user_template,
                     max_tokens=self.max_tokens,
                     temperature=self.temperature,
-                    generated_responses=generated_responses
+                    generated_responses=self.generated_responses
                     )
-            # self.pipeline.stats["chunks_processed"] += 1
+                    
+        sentiment_map = {'Very Negative': -2, 'Negative': -1, 'Neutral': 0, 'Positive': 1, 'Very Positive': 2}
+        responses = []
 
-            # if self.pipeline.stats["chunks_processed"] % 50 == 0:
-            #         log_progress(self.pipeline)
-            
+        for result in results:
+            scores = [sentiment_map.get(choice, np.nan) for choice in result]
+            mean_score = np.nanmean(scores)
+            label = score_to_label(mean_score)
+            responses.append(label)                     
+                 
         data = data.copy()             
-        data["sentiment"] = results
+        data["sentiment"] = responses
 
         return data
     
     def get_runner(self):
-        return self.runner
+        return self.runner    
+    
 
 class SAwithAttention(SentimentAnalyzer):
     def __init__(self, model):

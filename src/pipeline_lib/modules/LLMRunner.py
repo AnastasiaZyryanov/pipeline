@@ -2,7 +2,6 @@ import abc
 from ..utils import callGenerator
 import ollama
 import openai
-#from ..vllm_server import VLLMServerContextManager
 
 class LLMRunner(abc.ABC):
     def __init__(self, model, api_key=None, seed=None): 
@@ -16,7 +15,6 @@ class LLMRunner(abc.ABC):
 
 class OllamaRunner(LLMRunner):
     def __init__(self, model, api_key=None, seed=None): #, gpu=None, port=None):
-        print(f"[DEBUG] Creating OllamaRunner with model={model}")
         super().__init__(model, api_key, seed) 
         # self.gpu=gpu
         # self.port=port
@@ -25,9 +23,7 @@ class OllamaRunner(LLMRunner):
 
     def ensure_model_exists(self):
         installed_models = [m["model"].split(':')[0] for m in ollama.list()["models"]]
-        print(f"[DEBUG] Installed models: {installed_models}")
-        print(f"[DEBUG] Looking for: {self.model}")
-
+        
         if self.model not in installed_models:
             print(f"Pulling Ollama model: {self.model}")
             ollama.pull(self.model)        
@@ -52,13 +48,11 @@ class VLLMRunner(LLMRunner):
         self.client = None
         self._server = None
 
-    def generate(self, documents, system_prompt, user_template, max_tokens, temperature=0.7, generated_responses=1):
-        # with VLLMServerContextManager(model=self.model, device=self.gpu, port=self.port)  as vllm_process: 
-        #     client = openai.OpenAI(base_url=f"http://localhost:{self.port}/v1", api_key=self.api_key or "EMPTY")
-        #     return list(callGenerator(client, self.model, documents, system_prompt, user_template, max_tokens, temperature))
+    def generate(self, documents, system_prompt, user_template, max_tokens, generated_responses=None, temperature=None):
         if self.client is None:
             self.client=openai.OpenAI(
                 base_url=f"http://localhost:{self.port}/v1",
                 api_key=self.api_key or "EMPTY"
             )
-        return list(callGenerator(self.client, self.model, documents, system_prompt, user_template, max_tokens, temperature, generated_responses))
+        print(f"[Runner] received temperature: {temperature}, generated responses: {generated_responses}")
+        return list(callGenerator(self.client, self.model, documents, system_prompt, user_template, max_tokens, temperature, generated_responses))  

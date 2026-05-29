@@ -5,6 +5,7 @@ import pandas as pd
 import nltk
 from ..utils import split_long_chunk
 from ..core.module_base import PipelineModule
+nltk.download('punkt_tab')
 
 class Chunker(PipelineModule):
     def run(self): pass
@@ -34,10 +35,6 @@ class SentenceChunkerFunction(Chunker):
 
         sentences_lengths = data['chunk'].apply(lambda x: len(nltk.word_tokenize(x)))
         data = data[sentences_lengths > np.percentile(sentences_lengths, 25)].reset_index(drop=True)
-
-        if hasattr(self, "pipeline") and self.pipeline:
-            self.pipeline.stats["chunks_total"] = len(data)
-            self.pipeline.stats["chunks_processed"] = 0
 
         return data
     
@@ -106,9 +103,4 @@ class SemanticChunkerFunction(Chunker):
                     semantic_chunks.append({"comment": row["comment"], "chunk": sub})
 
         data = pd.DataFrame(semantic_chunks)
-
-        if hasattr(self, "pipeline") and self.pipeline:
-            self.pipeline.stats["chunks_total"] = len(data)
-            self.pipeline.stats["chunks_processed"] = 0
-
         return data      

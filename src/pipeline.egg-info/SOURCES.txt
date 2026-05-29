@@ -6,6 +6,7 @@ src/pipeline.egg-info/dependency_links.txt
 src/pipeline.egg-info/requires.txt
 src/pipeline.egg-info/top_level.txt
 src/pipeline_lib/__init__.py
+src/pipeline_lib/ollama_server.py
 src/pipeline_lib/runner.py
 src/pipeline_lib/utils.py
 src/pipeline_lib/vllm_server.py

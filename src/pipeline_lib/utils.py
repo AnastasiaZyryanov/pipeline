@@ -36,10 +36,14 @@ def datasetIterator(documents: list[str], system_prompt, user_template):
     for doc in documents:
         yield [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_template.format(text=doc)}
+            {"role": "user", "content": user_template.format(**doc)}
         ]
 
 def callGenerator(client, model, documents: list[str], system_prompt, user_template, max_tokens=None, temperature=None, generated_responses=None):
+    if system_prompt is None:
+        system_prompt = ""
+    if user_template is None:
+        user_template = ""
    
     iterator = datasetIterator(documents, system_prompt, user_template)    
     bar = tqdm(iterator, total=len(documents))

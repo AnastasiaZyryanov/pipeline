@@ -1,5 +1,6 @@
 import abc
 from ..utils import callGenerator
+from ..ollama_server import OllamaServer
 import ollama
 import openai
 
@@ -18,25 +19,24 @@ class OllamaRunner(LLMRunner):
         super().__init__(model, api_key, seed) 
         # self.gpu=gpu
         # self.port=port
+        self.server = OllamaServer()
+        self.server.ensure_running()
         self.client = ollama.Client()
         self.ensure_model_exists()
 
     def ensure_model_exists(self):
-        installed_models = [m["model"].split(':')[0] for m in ollama.list()["models"]]
-        
+        installed_models = [m["model"].split(':')[0] for m in ollama.list()["models"]]        
         if self.model not in installed_models:
             print(f"Pulling Ollama model: {self.model}")
             ollama.pull(self.model)        
 
     def generate(self, documents, system_prompt, user_template, max_tokens, temperature=0):
         results = []
-
         for doc in documents:
             response = ollama.generate(
                 model=self.model, prompt=f"{system_prompt}\n\n{user_template.format(text=doc)}", options={'temperature': temperature, 'num_predict': max_tokens}, 
             )
             results.append(response['response'].strip())
-
         return results   
     
 

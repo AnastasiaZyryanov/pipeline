@@ -43,21 +43,7 @@ MODULE_REGISTRY = {
     ),
      "SAwithAttention": lambda cfg: SAwithAttention(
         model=cfg.get("model")
-     ),
-     "KEwithKeyBERT": lambda cfg: KEwithKeyBERT(         
-        embedding_model=cfg["embedding_model"],
-        top_n=cfg["top_n"],
-        keyphrase_size=cfg["keyphrase_size"],
-        stopwords=cfg["stopwords"], 
-        min_df=cfg["min_df"],
-        system_prompt=cfg.get("system_prompt"),
-        user_template=cfg.get("user_template"),
-        seed_keywords=cfg.get("seed_keywords"),
-        use_maxsum=cfg.get("use_maxsum"),
-        use_mmr=cfg.get("use_mmr"),
-        diversity=cfg.get("diversity"),
-        nr_candidates=cfg.get("nr_candidates"),
-     )   
+     ) 
 }
 
 def create_module(config):
@@ -80,7 +66,23 @@ def create_module(config):
             user_template=config.get("user_template"),
             max_tokens=config.get("max_tokens"),
         )
-     
+    if module_type == "KEwithKeyBERT":
+       runner = create_module(config["runner"])
+       return KEwithKeyBERT(      
+            runner=runner,   
+            embedding_model=config["embedding_model"],
+            top_n=config["top_n"],
+            keyphrase_size=config["keyphrase_size"],
+            stopwords=config["stopwords"], 
+            min_df=config["min_df"],
+            system_prompt=config.get("system_prompt"),
+            user_template=config.get("user_template"),
+            seed_keywords=config.get("seed_keywords"),
+            use_maxsum=config.get("use_maxsum"),
+            use_mmr=config.get("use_mmr"),
+            diversity=config.get("diversity"),
+            nr_candidates=config.get("nr_candidates", 20),
+     )       
     if module_type in MODULE_REGISTRY:
         return MODULE_REGISTRY[module_type](config)
 

@@ -148,8 +148,19 @@ PIPELINE_SCHEMA = {
           "type": { "const": "KEwithKeyBERT" },
           "system_prompt": { "type": "string" },
           "user_template": { "type": "string" },
-          "seed_keywords": { "type": "string" },
-          "embedding_model": { "type": "string" },
+          "seed_keywords": { 
+              "type": "array",
+              "items": {"type": "string"}
+              },
+          "embedding_model": { 
+              "type": "object",
+              "properties": {
+                  "name": {"type": "string"},
+                  "dtype": {"type": "string", "enum": ["float16", "float32"]},
+                  "device": {"type": "string", "enum": ["cpu", "cuda"]}
+              },
+              "required": ["name"]
+            },
           "top_n": { "type": "integer" },
           "keyphrase_size": { "type": "integer" },
           "stopwords": { "type": "string" },
@@ -157,9 +168,10 @@ PIPELINE_SCHEMA = {
           "use_maxsum": { "type": "boolean" },
           "use_mmr": { "type": "boolean" },
           "diversity": { "type": "number" },
-          "nr_candidates": { "type": "integer" }          
+          "nr_candidates": { "type": "integer" },
+          "runner": { "$ref": "#/$defs/LLMRunner" }          
         },
-        "required": ["type", "embedding_model", "top_n", "keyphrase_size", "stopwords", "min_df"]
+        "required": ["type", "embedding_model", "top_n", "keyphrase_size", "stopwords", "min_df", "runner"]
       },
       "KeywordExtractor": {
         "oneOf": [

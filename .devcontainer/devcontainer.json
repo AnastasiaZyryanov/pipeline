@@ -15,7 +15,7 @@
 	},
 
 	"runArgs": [
-        "--name", "sentiment-pipeline-azyryanova-modis-6", "--runtime", "nvidia"
+        "--name", "sentiment-pipeline-azyryanova-modis-0", "--runtime", "nvidia"
 	],
 
 	"mounts": [
@@ -40,7 +40,7 @@
 		}
 	},
 
-	"postCreateCommand": "uv sync && python -c 'import nltk; nltk.download(\"punkt\")' && bash .devcontainer/setup_ollama.sh"
+	"postCreateCommand": "uv sync && uv run python -c 'import nltk; nltk.download(\"punkt_tab\")' && bash .devcontainer/setup_ollama.sh"
 	
 
 	// Features to add to the dev container. More info: https://containers.dev/features.

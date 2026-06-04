@@ -83,7 +83,6 @@ class KEwithKeyBERT(KeywordExtractor):
     )        
         
         llm_inputs = []
-
         for doc, cand_list in zip(documents, candidates):
             candidate_keywords = ", ".join(kw[0] for kw in cand_list)
             llm_inputs.append({
@@ -98,8 +97,7 @@ class KEwithKeyBERT(KeywordExtractor):
             max_tokens=None
         )
         all_keywords = []
-
-        for response in responses:                            
+        for idx, response in enumerate(responses):                            
             if response is None:
                 all_keywords.append([])
                 continue
@@ -110,13 +108,18 @@ class KEwithKeyBERT(KeywordExtractor):
             else:
                 keywords = []
             keywords = [
-                kw.strip().upper()
+                kw.strip()
                 for kw in keywords
                 if kw and kw.strip()
             ]
             keywords = list(dict.fromkeys(keywords))
+            keywords = self.filter_by_vocab(keywords, documents[idx])
             all_keywords.append(keywords)
 
         data["keywords"] = all_keywords
 
         return data
+    
+    def filter_by_vocab(self, keywords_list, document):
+        doc_lower = document.lower()
+        return [kw for kw in keywords_list if kw.lower() in doc_lower]

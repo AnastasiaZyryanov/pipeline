@@ -3,12 +3,28 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import pandas as pd
 import nltk
-from ..utils import split_long_chunk
 from ..core.module_base import PipelineModule
 nltk.download('punkt_tab')
 
 class Chunker(PipelineModule):
     def run(self): pass
+
+    def _split_long_chunk(self, text, max_tokens): 
+        # Approximate token estimation:1 token ≈ 0.75 words,  1 word ≈ 1.33 tokens
+        # Exact tokenization depends on the model tokenizer. 
+         
+        words = text.split()
+        estimated_tokens = len(words) * 1.33
+        if estimated_tokens <= max_tokens:
+            return [text]
+        chunk_size_words = int(max_tokens / 1.33)
+        if chunk_size_words < 1:
+            chunk_size_words = 1
+        chunks = []
+        for i in range(0, len(words), chunk_size_words):
+            chunk = ' '.join(words[i:i+chunk_size_words])
+            chunks.append(chunk)
+        return chunks
 
 class SentenceChunkerFunction(Chunker):
     def __init__(self, language=None, max_tokens=350):    
@@ -21,14 +37,12 @@ class SentenceChunkerFunction(Chunker):
         data = data.dropna(subset=["comment"]).reset_index(drop=True)
 
         data["chunk"] = data["comment"].apply(
-            lambda x: nltk.tokenize.sent_tokenize(x)
-        )
-        #prevent too long chunks
+            lambda x: nltk.tokenize.sent_tokenize(x, language=self.language)
+            if self.language else nltk.tokenize.sent_tokenize(x))
         data["chunk"] = data["chunk"].apply(
             lambda sentences: [subchunk for sent in sentences 
-                               for subchunk in split_long_chunk(sent, self.max_tokens)]
-        )
-        
+                               for subchunk in self._split_long_chunk(sent, self.max_tokens)]
+        )        
         data['comment'] = data.index      
         data = data.explode('chunk')        
         data.drop_duplicates(subset=['chunk'], inplace=True)
@@ -39,10 +53,11 @@ class SentenceChunkerFunction(Chunker):
         return data
     
 class SemanticChunkerFunction(Chunker):
-    def __init__(self, embedding_model, percentile, overlap, max_tokens=350):
+    def __init__(self, embedding_model, percentile, overlap, language=None, max_tokens=350):
         self.embedding_model = SentenceTransformer(embedding_model)
         self.percentile=percentile
         self.overlap=overlap
+        self.language = language
         self.max_tokens = max_tokens
                 
     def run(self, data):
@@ -50,33 +65,25 @@ class SemanticChunkerFunction(Chunker):
         data = data.copy()        
         data = data.dropna(subset=["comment"]).reset_index(drop=True) 
 
-        data["chunk"] = data["comment"].apply(lambda x: nltk.tokenize.sent_tokenize(x))
+        data["chunk"] = data["comment"].apply(
+            lambda x: nltk.tokenize.sent_tokenize(x, language=self.language)
+            if self.language else nltk.tokenize.sent_tokenize(x))
         data["comment"] = data.index
         semantic_chunks = []
 
-        # process each document separately
         for idx, row in data.iterrows():
             sentences = row["chunk"]
-            # skip empty docs
             if not sentences or len(sentences) == 0:
                 continue
-
-            # single sentence = single chunk
             if len(sentences) == 1:
-                #prevent forming too long chunks
-                for sub in split_long_chunk(sentences[0], self.max_tokens):
+                for sub in self._split_long_chunk(sentences[0], self.max_tokens):
                     semantic_chunks.append({"comment": row["comment"], "chunk": sub})
                 continue
-
-            # embeddings for each sentence
             embeddings = self.embedding_model.encode(sentences)
 
             similarities = []
             for i in range(len(embeddings) - 1):
-                sim = cosine_similarity(
-                    [embeddings[i]],
-                    [embeddings[i + 1]]
-                )[0][0]
+                sim = cosine_similarity([embeddings[i]],[embeddings[i + 1]])[0][0]
                 similarities.append(sim)
 
             threshold = np.percentile(
@@ -87,7 +94,6 @@ class SemanticChunkerFunction(Chunker):
             current_chunk = [sentences[0]]
 
             for i in range(1, len(sentences)):
-                # semantic boundary
                 if similarities[i - 1] < threshold:
                     raw_chunks.append(" ".join(current_chunk))
                     overlap_sentences = current_chunk[-self.overlap:] if self.overlap > 0 else []
@@ -99,7 +105,7 @@ class SemanticChunkerFunction(Chunker):
                 raw_chunks.append(" ".join(current_chunk))
 
             for raw_chunk in raw_chunks:
-                for sub in split_long_chunk(raw_chunk, self.max_tokens):
+                for sub in self._split_long_chunk(raw_chunk, self.max_tokens):
                     semantic_chunks.append({"comment": row["comment"], "chunk": sub})
 
         data = pd.DataFrame(semantic_chunks)

@@ -28,9 +28,7 @@ PIPELINE_SCHEMA = {
             "type": "object",
             "properties": {
               "type": { "const": "OllamaRunner" }
-             # "gpu": { "type": "string" },
-             # "port": { "type": "string" }
-            },
+           },
             "required": ["type"]            
           }
         ]
@@ -71,10 +69,10 @@ PIPELINE_SCHEMA = {
           "embedding_model": { "type": "string" },
           "percentile": { "type": "number" },
           "overlap": { "type": "integer" },
+          "language": { "type": "string" },
           "max_tokens": {"type": "string"}   
-          #"sentence_chunker": { "$ref": "#/$defs/SentenceChunker" }
-        },
-        "required": ["type", "embedding_model", "percentile", "overlap"]#, "sentence_chunker"]
+      },
+        "required": ["type", "embedding_model", "percentile", "overlap"]
       },
       "Chunker": {
         "oneOf": [

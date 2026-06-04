@@ -1,8 +1,8 @@
 import abc
-from ..utils import callGenerator
-from ..ollama_server import OllamaServer
+from ..servers.ollama_server import OllamaServer
 import ollama
 import openai
+from tqdm.auto import tqdm
 
 class LLMRunner(abc.ABC):
     def __init__(self, model, api_key=None, seed=None): 
@@ -15,10 +15,8 @@ class LLMRunner(abc.ABC):
         pass    
 
 class OllamaRunner(LLMRunner):
-    def __init__(self, model, api_key=None, seed=None): #, gpu=None, port=None):
+    def __init__(self, model, api_key=None, seed=None): 
         super().__init__(model, api_key, seed) 
-        # self.gpu=gpu
-        # self.port=port
         self.server = OllamaServer()
         self.server.ensure_running()
         self.client = ollama.Client()
@@ -29,16 +27,29 @@ class OllamaRunner(LLMRunner):
         if self.model not in installed_models:
             print(f"Pulling Ollama model: {self.model}")
             ollama.pull(self.model)        
-
-    def generate(self, documents, system_prompt, user_template, max_tokens, temperature=0):
+  
+    def generate(self, documents, system_prompt, user_template, max_tokens, temperature=0, **kwargs):
+        generated_responses = kwargs.get('generated_responses', None)
         results = []
         for doc in documents:
-            response = ollama.generate(
-                model=self.model, prompt=f"{system_prompt}\n\n{user_template.format(text=doc)}", options={'temperature': temperature, 'num_predict': max_tokens}, 
-            )
-            results.append(response['response'].strip())
-        return results   
-    
+            if generated_responses is not None:
+                doc_responses = []
+                for _ in range(generated_responses):
+                    response = ollama.generate(
+                        model=self.model,
+                        prompt=f"{system_prompt}\n\n{user_template.format(text=doc)}",
+                        options={'temperature': temperature, 'num_predict': max_tokens}
+                    )
+                    doc_responses.append(response['response'].strip())
+                results.append(doc_responses)
+            else:
+                response = ollama.generate(
+                    model=self.model,
+                    prompt=f"{system_prompt}\n\n{user_template.format(text=doc)}",
+                    options={'temperature': temperature, 'num_predict': max_tokens}
+                )
+                results.append(response['response'].strip())
+        return results
 
 class VLLMRunner(LLMRunner):
     def __init__(self, model, api_key=None, seed=None, gpu=None, port=None):
@@ -55,4 +66,42 @@ class VLLMRunner(LLMRunner):
                 api_key=self.api_key or "EMPTY"
             )
         print(f"[Runner] received temperature: {temperature}, generated responses: {generated_responses}")
-        return list(callGenerator(self.client, self.model, documents, system_prompt, user_template, max_tokens, temperature, generated_responses))  
+        return list(self.callGenerator(self.client, self.model, documents, system_prompt, user_template, max_tokens, temperature, generated_responses))  
+          
+    
+    def datasetIterator(self, documents: list[str], system_prompt, user_template):
+        for doc in documents:
+            if isinstance(doc, dict):
+                content = user_template.format(**doc)
+            else:
+                content = user_template.format(text=doc)
+            yield [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": content}
+            ]
+
+    def callGenerator(self, client, model, documents: list[str], system_prompt, user_template, max_tokens=None, temperature=None, generated_responses=None):
+        if system_prompt is None:
+            system_prompt = ""
+        if user_template is None:
+            user_template = ""
+    
+        iterator = self.datasetIterator(documents, system_prompt, user_template)    
+        bar = tqdm(iterator, total=len(documents))
+        for doc in bar:   
+            kwargs = {
+                "model": model,
+                "messages": doc
+            }    
+            if temperature is not None:
+                kwargs["temperature"] = temperature        
+            if generated_responses is not None:
+                kwargs["n"] = generated_responses
+            if max_tokens is not None:
+                kwargs["max_tokens"]= max_tokens
+
+            response = client.chat.completions.create(**kwargs)
+            response = [choice.message.content for choice in response.choices]
+            bar.set_postfix(result=response)        
+            
+            yield response

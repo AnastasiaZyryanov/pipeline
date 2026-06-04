@@ -1,4 +1,4 @@
-from .vllm_server import VLLMServerContextManager
+from .servers.vllm_server import VLLMServerContextManager
 from .modules.LLMRunner import VLLMRunner
 
 class Pipeline:

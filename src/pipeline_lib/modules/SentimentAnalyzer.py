@@ -1,7 +1,6 @@
 from transformers import pipeline
 from ..core.module_base import PipelineModule
 import numpy as np
-from ..utils import score_to_label
 
 class SentimentAnalyzer(PipelineModule):
         def run(self): pass
@@ -22,8 +21,7 @@ class SAwithLLM(SentimentAnalyzer):
             raise ValueError("Runner is not initialized")
 
         documents = data["chunk"].astype(str).tolist()
-           
-        #if not isinstance(self.generated_responses, int) or self.generated_responses < 1:
+        
         if self.generated_responses<1:
             raise ValueError(f"generated_responses must be a positive integer")
         
@@ -42,13 +40,25 @@ class SAwithLLM(SentimentAnalyzer):
         for result in results:
             scores = [sentiment_map.get(choice, np.nan) for choice in result]
             mean_score = np.nanmean(scores)
-            label = score_to_label(mean_score)
+            label = self.score_to_label(mean_score)
             responses.append(label)                     
                  
         data = data.copy()             
         data["sentiment"] = responses
 
         return data
+    
+    def score_to_label(self,score):
+        if score <= -1.5:
+            return "Very Negative"
+        elif score <= -0.5:
+            return "Negative"
+        elif score < 0.5:
+            return "Neutral"
+        elif score < 1.5:
+            return "Positive"
+        else:
+            return "Very Positive"
     
     def get_runner(self):
         return self.runner    
@@ -58,11 +68,7 @@ class SAwithAttention(SentimentAnalyzer):
     def __init__(self, model):
         if model is None:
             model = "cardiffnlp/twitter-roberta-base-sentiment-latest"
-        self.model_name = model
-
-        #distilbert-base-uncased-finetuned-sst-2-english
-        #siebert/sentiment-roberta-large-english
-
+        self.model_name = model   
         self.classifier = pipeline(
             "sentiment-analysis",
             model=model,
@@ -76,13 +82,14 @@ class SAwithAttention(SentimentAnalyzer):
         data = data.copy()
         documents = data["chunk"].astype(str).tolist()
         results = self.classifier(documents)
-
+        label_map = {
+            "negative": "Negative",
+            "neutral": "Neutral",
+            "positive": "Positive"
+        }
         sentiments = [
-            r["label"]
+            label_map.get(r["label"].lower(), r["label"])
             for r in results
         ]
-
         data["sentiment"] = sentiments
-        #data["sentiment_score"] = [ r["score"] for r in results]
-
         return data

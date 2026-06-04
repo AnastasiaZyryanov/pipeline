@@ -10,9 +10,7 @@ MODULE_REGISTRY = {
         OllamaRunner(
             model=cfg["model"],
             api_key=cfg.get("api_key"),
-            seed=cfg.get("seed"),
-           # gpu=cfg.get("gpu"),
-           # port=cfg.get("port"),
+            seed=cfg.get("seed"),           
             )
     ),    
     "VLLMRunner": lambda cfg: (
@@ -33,8 +31,8 @@ MODULE_REGISTRY = {
         embedding_model=cfg["embedding_model"],
         percentile=cfg["percentile"],
         overlap=cfg["overlap"],
+        language=cfg.get("language"),
         max_tokens=cfg.get("max_tokens", 350)
-        #sentence_chunker=sentence_chunker,
     ),
     "NoClean": lambda cfg: NoClean(),
     "CleanerWithScript": lambda cfg: CleanerWithScript(

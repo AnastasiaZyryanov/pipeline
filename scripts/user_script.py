@@ -18,7 +18,7 @@ def main():
 
     pipeline = build_pipeline(config)
 
-    input_data = "data/comments.csv"
+    input_data = "data/test_set.csv"
     df = pd.read_csv(input_data)
 
     result=pipeline.run(df)

@@ -101,10 +101,13 @@ class KEwithKeyBERT(KeywordExtractor):
             if response is None:
                 all_keywords.append([])
                 continue
+            if isinstance(response, list):
+                if not response:
+                    all_keywords.append([])
+                    continue
+                response = response[0]
             if isinstance(response, str):
                 keywords = response.split(",")
-            elif isinstance(response, list):
-                keywords = response
             else:
                 keywords = []
             keywords = [
@@ -123,3 +126,6 @@ class KEwithKeyBERT(KeywordExtractor):
     def filter_by_vocab(self, keywords_list, document):
         doc_lower = document.lower()
         return [kw for kw in keywords_list if kw.lower() in doc_lower]
+    
+    def get_runner(self):
+        return self.runner

@@ -25,8 +25,9 @@ class OllamaRunner(LLMRunner):
     def ensure_model_exists(self):
         installed_models = [m["model"].split(':')[0] for m in ollama.list()["models"]]        
         if self.model not in installed_models:
-            print(f"Pulling Ollama model: {self.model}")
+            #print(f"Pulling Ollama model: {self.model}")
             ollama.pull(self.model)        
+        print(f"Model: {self.model}")
   
     def generate(self, documents, system_prompt, user_template, max_tokens, temperature=0, **kwargs):
         generated_responses = kwargs.get('generated_responses', None)
@@ -65,7 +66,6 @@ class VLLMRunner(LLMRunner):
                 base_url=f"http://localhost:{self.port}/v1",
                 api_key=self.api_key or "EMPTY"
             )
-        print(f"[Runner] received temperature: {temperature}, generated responses: {generated_responses}")
         return list(self.callGenerator(self.client, self.model, documents, system_prompt, user_template, max_tokens, temperature, generated_responses))  
           
     

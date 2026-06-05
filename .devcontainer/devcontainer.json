@@ -10,12 +10,12 @@
 
 	"containerEnv": {
 		"UV_LINK_MODE": "copy",
-		"NVIDIA_VISIBLE_DEVICES": "6",
+		"NVIDIA_VISIBLE_DEVICES": "1",
 		"HF_HOME": "/huggingface"
 	},
 
 	"runArgs": [
-        "--name", "sentiment-pipeline-azyryanova-modis-0", "--runtime", "nvidia"
+        "--name", "sentiment-pipeline-azyryanova-modis-1", "--runtime", "nvidia"
 	],
 
 	"mounts": [

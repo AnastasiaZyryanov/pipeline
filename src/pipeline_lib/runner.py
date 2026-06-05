@@ -12,9 +12,9 @@ class Pipeline:
             module.pipeline = self
             runner = getattr(module, "runner", None)
 
-            if runner is not None:
-                print(f"Using runner: {type(runner).__name__}")
-                print(f"Model: {runner.model}")    
+            # if runner is not None:
+            #     print(f"Using runner: {type(runner).__name__}")
+            #     print(f"Model: {runner.model}")    
 
             if isinstance(runner, VLLMRunner):
                 with VLLMServerContextManager(

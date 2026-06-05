@@ -12,7 +12,7 @@ class VLLMServerContextManager(ContextDecorator):
         self.process = None
 
     def __enter__(self):
-        print(f"Starting vLLM server for model {self.model}...")
+        #print(f"Starting vLLM server for model {self.model}...")
         os.makedirs("logs", exist_ok=True)
         std_out = open(f"logs/vllm_server_{self.model.replace('/', '_')}_port{self.port}.log", "w")
         std_err = open(f"logs/vllm_server_{self.model.replace('/', '_')}_port{self.port}_error.log", "w")
@@ -30,7 +30,8 @@ class VLLMServerContextManager(ContextDecorator):
         while not self.__wait_until_ready():
             time.sleep(10)
 
-        print(f"VLLM server for model {self.model} is running on port {self.port}")
+        print(f"VLLM server is running")
+        print(f"Model: {self.model}")
         return self
     
     def __wait_until_ready(self):
@@ -46,10 +47,10 @@ class VLLMServerContextManager(ContextDecorator):
             print("Type:", exc_type)
             print("Value:", exc_value)
 
-        print("Stopping vLLM server...")
+        #print("Stopping vLLM server...")
 
         if self.process:
             self.process.terminate()
             self.process.wait()
-            print(f"VLLM server for model {self.model} on port {self.port} has been terminated.")
+            #print(f"VLLM server for model {self.model} on port {self.port} has been terminated.")
         return False

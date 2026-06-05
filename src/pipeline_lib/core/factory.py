@@ -6,7 +6,7 @@ from pipeline_lib.modules.LLMRunner import *
 
 MODULE_REGISTRY = {
     "OllamaRunner": lambda cfg: (
-        print("Creating OllamaRunner") or
+        #print("Creating OllamaRunner") or
         OllamaRunner(
             model=cfg["model"],
             api_key=cfg.get("api_key"),
@@ -14,7 +14,7 @@ MODULE_REGISTRY = {
             )
     ),    
     "VLLMRunner": lambda cfg: (
-        print("Creating VLLMRunner") or
+        #print("Creating VLLMRunner") or
         VLLMRunner(
             model=cfg["model"],
             api_key=cfg.get("api_key"),

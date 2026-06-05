@@ -15,10 +15,11 @@ class OllamaServer:
 
     def ensure_running(self):
         if self._started and self._is_running():
+            print(f"Ollama server is running")
             return  
         if self._process and self._process.poll() is None:
             return  
-        print("Starting Ollama server...")
+        #print("Starting Ollama server...")
         self._process = subprocess.Popen(
             ["ollama", "serve"],
             stdout=subprocess.DEVNULL,
@@ -27,7 +28,7 @@ class OllamaServer:
         )
         for i in range(30):
             if self._is_running():
-                print(f"Ollama server ready after {i+1} seconds")
+                #print(f"Ollama server ready after {i+1} seconds")
                 self._started = True
                 break
             time.sleep(1)
@@ -44,11 +45,11 @@ class OllamaServer:
 
     def stop(self):
         if self._process and self._process.poll() is None:
-            print("Stopping Ollama server...")
+            #print("Stopping Ollama server...")
             self._process.terminate()
             try:
                 self._process.wait(timeout=5)
             except subprocess.TimeoutExpired:
                 self._process.kill()
             self._started = False
-            print("Ollama server stopped")
+            #print("Ollama server stopped")

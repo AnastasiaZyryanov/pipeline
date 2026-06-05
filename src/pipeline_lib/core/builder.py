@@ -16,7 +16,6 @@ def build_pipeline(data: dict) -> Pipeline:
     for step_name in order:
         step_cfg = config[step_name]
         module = create_module(step_cfg)
-        print(f"[Builder] Created module {module}, runner={getattr(module, 'runner', None)}")
         steps.append(module)  
 
     return Pipeline(steps)

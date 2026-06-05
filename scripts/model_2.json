@@ -4,7 +4,7 @@
       "embedding_model": "nomic-ai/nomic-embed-text-v2-moe",
       "percentile": 85,
       "overlap":  1
-  },
+    },      
     "Cleaner": {
       "type": "CleanerWithScript",
       "script": "scripts/clean.py",
@@ -13,7 +13,7 @@
     "SentimentAnalyzer": {
     "type": "SAwithAttention",
     "model": "cardiffnlp/twitter-roberta-base-sentiment-latest"
-  },
+    },
     "KeywordExtractor": {
     "type": "KEwithKeyBERT",
     "runner": {  

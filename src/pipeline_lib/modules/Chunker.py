@@ -12,9 +12,9 @@ class Chunker(PipelineModule):
     def _split_long_chunk(self, text, max_tokens): 
         # Approximate token estimation:1 token ≈ 0.75 words,  1 word ≈ 1.33 tokens
         # Exact tokenization depends on the model tokenizer. 
-         
         words = text.split()
         estimated_tokens = len(words) * 1.33
+
         if estimated_tokens <= max_tokens:
             return [text]
         chunk_size_words = int(max_tokens / 1.33)
@@ -27,7 +27,7 @@ class Chunker(PipelineModule):
         return chunks
 
 class SentenceChunkerFunction(Chunker):
-    def __init__(self, language=None, max_tokens=350):    
+    def __init__(self, language=None, max_tokens=450):    
         self.language = language
         self.max_tokens = max_tokens 
            
@@ -36,12 +36,12 @@ class SentenceChunkerFunction(Chunker):
         data = data.copy()
         data = data.dropna(subset=["comment"]).reset_index(drop=True)
 
-        data["chunk"] = data["comment"].apply(
+        data["sentences"] = data["comment"].apply(
             lambda x: nltk.tokenize.sent_tokenize(x, language=self.language)
             if self.language else nltk.tokenize.sent_tokenize(x))
-        data["chunk"] = data["chunk"].apply(
-            lambda sentences: [subchunk for sent in sentences 
-                               for subchunk in self._split_long_chunk(sent, self.max_tokens)]
+        data["chunk"] = data.apply(
+            lambda row: [subchunk for sent in row["sentences"] 
+                               for subchunk in self._split_long_chunk(sent, self.max_tokens)], axis=1
         )        
         data['comment'] = data.index      
         data = data.explode('chunk')        
@@ -53,7 +53,7 @@ class SentenceChunkerFunction(Chunker):
         return data
     
 class SemanticChunkerFunction(Chunker):
-    def __init__(self, embedding_model, percentile, overlap, language=None, max_tokens=350):
+    def __init__(self, embedding_model, percentile, overlap, language=None, max_tokens=450):
         self.embedding_model = SentenceTransformer(embedding_model, trust_remote_code = True)
         self.percentile=percentile
         self.overlap=overlap
@@ -110,4 +110,14 @@ class SemanticChunkerFunction(Chunker):
 
 
     def create_chunks(self, breakpoints, sentences):
-        return [' '.join(sentences[start:end]) for start, end in zip(breakpoints, breakpoints[1:])]    
+        raw_chunks = [
+            ' '.join(sentences[start:end])
+            for start, end in zip(breakpoints, breakpoints[1:])
+        ]
+
+        final_chunks = []
+        for chunk in raw_chunks:
+            split_chunks = self._split_long_chunk(chunk, self.max_tokens)
+            final_chunks.extend(split_chunks)
+
+        return final_chunks

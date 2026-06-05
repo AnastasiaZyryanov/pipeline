@@ -36,7 +36,13 @@ Il modulo Chunker divide le recensioni in segmenti più piccoli per facilitarne 
 
 Utilizza `nltk.tokenize.sent_tokenize()` per suddividere il testo in frasi secondo regole linguistiche specifiche. 
 
-**Parametro Obbligatorio Descrizione** language No Lingua utilizzata dal tokenizer di NLTK 
+|**Parametro**|**Obbligatorio**|**Descrizione**|
+|---|---|---|
+|max_tokens|No|lunghezza massima di chunk|
+|language|No|lingua utilizzata dal tokenizer di NLTK|
+
+Il  parametro `max_tokens` ,  viene  utilizzato  come  meccanismo  preventivo  per  limitare  la dimensione dell'input destinato ai moduli successivi, in particolare SawithAttention. Il valore predefinito è 350 tokens che è inferiore al limite massimo supportato dai modelli Transformer (512 token) per lasciare un margine di sicurezza durante la tokenizzazione e l'elaborazione del prompt. Il valore 350 è calcolato in base alla seguente estimazione: 1 token ≈ 0.75 words,  1 word ≈ 1.33 tokens 
+
 
 ## **SemanticChunkerFunction** 
 
@@ -182,44 +188,29 @@ I moduli basati su LLM richiedono un runner per l'esecuzione del modello.
 
 
 
-## **Struttura del progetto** 
+# Struttura del progetto
 
-## **src/pipeline_lib/** 
+## `src/pipeline_lib/`
 
-## **config/** 
+- **`config/`**
+  - `schema.py`: JSON-schema utilizzata per validare la configurazione fornita dall’utente.
+  - `validator.py`: valida la configurazione fornita dall’utente a base di JSON-schema
+- **`core/`**
+  - `builder.py`: costruisce la pipeline sulla base della configurazione validata.
+  - `factory.py`: crea le istanze di ogni modulo a base di configurazione fornita.
+  - `module_base.py`: classe astratta per tutti i moduli.
+- **`modules/`**
+  - `Chunker.py`
+  - `Cleaner.py`
+  - `SentimentAnalyzer.py`
+  - `KeywordExtractor.py`
+  - `LLMRunner.py`
+- **`servers/`**
+  - `ollama_server.py`: avvia e ferma automaticamente un server Ollama quando almeno un modulo utilizza un OllamaRunner.
+  - `vllm_server.py`: avvia e ferma automaticamente un server vLLM per ogni modulo che utilizza VLLMRunner.
+- `runner.py`
+- `__init__.py`
 
-- **schema.py:** JSON-schema utilizzata per validare la configurazione fornita dall’utente. 
+## `scripts/`
 
-- **validator.py:** valida la configurazione fornita dall’utente a base di JSON-schema 
-
-## **core/** 
-
-- **builder.py:** costruisce la pipeline sulla base della configurazione validata. 
-
-- **factory.py:** crea le istanze di ogni modulo a base di configurazione fornita. 
-
-- **module_base.py:** classe astratta per tutti i moduli. 
-
-## **modules/** 
-
-- **Chunker.py** 
-
-- **Cleaner.py** 
-
-- **SentimentAnalyzer.py** 
-
-- **KeywordExtractor.py** 
-
-- **LLMRunner.py** 
-
-## **servers/** 
-
-- **ollama_server.py:** avvia e ferma automaticamente un server Ollama quando almeno un modulo utilizza un `OllamaRunner` . 
-
-- **vllm_server.py:** avvia e ferma automaticamente un server vLLM per ogni modulo che utilizza `VLLMRunner.` 
-
-**runner.py** 
-
-**__init__.py** 
-
-##**scripts/** contiene alcuni esempi di configurazione utilizzabili come riferimento per costruire nuove pipeline. 
+Contiene alcuni esempi di configurazione utilizzabili come riferimento per costruire nuove pipeline.

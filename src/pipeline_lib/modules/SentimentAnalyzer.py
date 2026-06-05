@@ -72,8 +72,8 @@ class SAwithAttention(SentimentAnalyzer):
         self.classifier = pipeline(
             "sentiment-analysis",
             model=model,
-            truncation=True,
-            max_length = 512
+            truncation=False,            
+            max_length = None        
         )
                 
     def run(self, data):
@@ -81,6 +81,22 @@ class SAwithAttention(SentimentAnalyzer):
         
         data = data.copy()
         documents = data["chunk"].astype(str).tolist()
+
+        max_len = 0
+        for i, doc in enumerate(documents):
+            n = len(
+                self.classifier.tokenizer.encode(
+                    doc,
+                    add_special_tokens=True
+                )
+            )
+            max_len = max(max_len, n)
+
+            if n > 512:
+                print(f"OVERFLOW: chunk {i} -> {n}")
+
+        #print("Max tokens:", max_len)
+
         results = self.classifier(documents)
         label_map = {
             "negative": "Negative",

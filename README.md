@@ -218,8 +218,8 @@ I moduli basati su LLM richiedono un runner per l'esecuzione del modello.
 
 - **vllm_server.py:** avvia e ferma automaticamente un server vLLM per ogni modulo che utilizza `VLLMRunner.` 
 
-## **runner.py** 
+**runner.py** 
 
 **__init__.py** 
 
-**scripts/** contiene alcuni esempi di configurazione utilizzabili come riferimento per costruire nuove pipeline. 
+##**scripts/** contiene alcuni esempi di configurazione utilizzabili come riferimento per costruire nuove pipeline. 

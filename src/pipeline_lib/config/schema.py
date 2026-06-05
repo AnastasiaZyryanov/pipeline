@@ -66,7 +66,7 @@ PIPELINE_SCHEMA = {
         "type": "object",
         "properties": {
           "type": { "const": "SemanticChunkerFunction" },
-          "embedding_model": { "type": "string" },
+          "embedding_model": { "type": "string" },          
           "percentile": { "type": "number" },
           "overlap": { "type": "integer" },
           "language": { "type": "string" },

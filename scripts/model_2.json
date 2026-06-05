@@ -1,7 +1,7 @@
 {
     "Chunker": {
       "type": "SemanticChunkerFunction",
-      "embedding_model": "all-MiniLM-L6-v2",
+      "embedding_model": "nomic-ai/nomic-embed-text-v2-moe",
       "percentile": 85,
       "overlap":  1
   },

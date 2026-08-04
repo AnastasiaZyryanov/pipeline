@@ -7,10 +7,6 @@ src/pipeline.egg-info/requires.txt
 src/pipeline.egg-info/top_level.txt
 src/pipeline_lib/__init__.py
 src/pipeline_lib/runner.py
-src/pipeline_lib/utils.py
-src/pipeline_lib/vllm_server.py
-src/pipeline_lib/config/editor.py
-src/pipeline_lib/config/io.py
 src/pipeline_lib/config/schema.py
 src/pipeline_lib/config/state.py
 src/pipeline_lib/config/validator.py
@@ -22,4 +18,6 @@ src/pipeline_lib/modules/Cleaner.py
 src/pipeline_lib/modules/KeywordExtractor.py
 src/pipeline_lib/modules/LLMRunner.py
 src/pipeline_lib/modules/SentimentAnalyzer.py
+src/pipeline_lib/servers/ollama_server.py
+src/pipeline_lib/servers/vllm_server.py
 src/pipeline_lib/ui/app.py

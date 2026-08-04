@@ -10,12 +10,12 @@
 
 	"containerEnv": {
 		"UV_LINK_MODE": "copy",
-		"NVIDIA_VISIBLE_DEVICES": "7",
+		"NVIDIA_VISIBLE_DEVICES": "1",
 		"HF_HOME": "/huggingface"
 	},
 
 	"runArgs": [
-        "--name", "sentiment-pipeline-azyryanova-modis-7", "--runtime", "nvidia"
+        "--name", "sentiment-pipeline-azyryanova-modis-1", "--runtime", "nvidia"
 	],
 
 	"mounts": [
@@ -40,7 +40,8 @@
 		}
 	},
 
-	"postCreateCommand": "uv sync"
+	"postCreateCommand": "uv sync && uv run python -c 'import nltk; nltk.download(\"punkt_tab\")' && bash .devcontainer/setup_ollama.sh"
+	
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},

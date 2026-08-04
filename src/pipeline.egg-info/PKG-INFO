@@ -20,3 +20,4 @@ Requires-Dist: torch>=2.11.0
 Requires-Dist: transformers>=5.8.0
 Requires-Dist: vllm>=0.21.0; sys_platform == "linux"
 Requires-Dist: tokenspeed-mla>=0.1.2; sys_platform == "linux"
+Requires-Dist: streamlit>=1.58.0

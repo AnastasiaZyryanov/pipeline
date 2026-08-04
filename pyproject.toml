@@ -21,6 +21,7 @@ dependencies = [
     "transformers>=5.8.0",
     "vllm>=0.21.0; sys_platform == 'linux'",
     "tokenspeed-mla>=0.1.2; sys_platform == 'linux'",
+    "streamlit>=1.58.0",
 ]
 [tool.uv]
 package = true

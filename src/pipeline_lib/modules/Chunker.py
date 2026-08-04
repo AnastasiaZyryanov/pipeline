@@ -102,4 +102,6 @@ class SemanticChunkerFunction(Chunker):
                 for sub in split_long_chunk(raw_chunk, self.max_tokens):
                     semantic_chunks.append({"comment": row["comment"], "chunk": sub})
 
-        return pd.DataFrame(semantic_chunks)      
+        data = pd.DataFrame(semantic_chunks)
+
+        return  data   

@@ -1,6 +1,6 @@
 {
     "Chunker": {
-    "type": "SentenceChunkerFunction"
+      "type": "SentenceChunkerFunction"
   },
     "Cleaner": {
       "type": "CleanerWithScript",

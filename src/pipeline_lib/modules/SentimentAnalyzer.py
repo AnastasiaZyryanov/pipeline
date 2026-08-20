@@ -1,4 +1,3 @@
-from transformers import pipeline
 from ..core.module_base import PipelineModule
 import numpy as np
 
@@ -69,6 +68,7 @@ class SAwithAttention(SentimentAnalyzer):
         if model is None:
             model = "cardiffnlp/twitter-roberta-base-sentiment-latest"
         self.model_name = model   
+        from transformers import pipeline
         self.classifier = pipeline(
             "sentiment-analysis",
             model=model,

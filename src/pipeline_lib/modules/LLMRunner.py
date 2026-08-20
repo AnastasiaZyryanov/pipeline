@@ -1,8 +1,4 @@
 import abc
-from ..servers.ollama_server import OllamaServer
-import ollama
-import openai
-from tqdm.auto import tqdm
 
 class LLMRunner(abc.ABC):
     def __init__(self, model, api_key=None, seed=None): 
@@ -13,6 +9,9 @@ class LLMRunner(abc.ABC):
     @abc.abstractmethod   
     def generate(self, documents, system_prompt, user_template, max_tokens, temperature=0):
         pass    
+
+from ..servers.ollama_server import OllamaServer
+import ollama
 
 class OllamaRunner(LLMRunner):
     def __init__(self, model, api_key=None, seed=None): 
@@ -62,6 +61,7 @@ class VLLMRunner(LLMRunner):
 
     def generate(self, documents, system_prompt, user_template, max_tokens, generated_responses=None, temperature=None):
         if self.client is None:
+            import openai
             self.client=openai.OpenAI(
                 base_url=f"http://localhost:{self.port}/v1",
                 api_key=self.api_key or "EMPTY"
@@ -87,6 +87,7 @@ class VLLMRunner(LLMRunner):
             user_template = ""
     
         iterator = self.datasetIterator(documents, system_prompt, user_template)    
+        from tqdm.auto import tqdm
         bar = tqdm(iterator, total=len(documents))
         for doc in bar:   
             kwargs = {

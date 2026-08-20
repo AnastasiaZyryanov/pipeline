@@ -29,13 +29,6 @@ def get_schema_for_type(schema, type_name):
             return variant
     raise ValueError(type_name)
 
-# def get_properties(module_name: str, type_name: str) -> dict:
-#     schema = get_schema_for_type(
-#         module_name,
-#         type_name
-#     )
-#     return schema["properties"]
-
 def get_properties(schema):
     schema = resolve_schema(schema)
     return schema.get("properties", {})
@@ -46,14 +39,6 @@ def get_required_fields(module_name: str, type_name: str) -> list[str]:
         type_name
     )
     return schema.get("required", [])
-
-# def get_ref_schema(parameter_schema: dict) -> dict:
-#     return resolve_ref(parameter_schema["$ref"])
-
-# def resolve_schema(schema):
-#     if "$ref" in schema:
-#         return resolve_ref(schema["$ref"])
-#     return schema
 
 def resolve_schema(schema):
     if "$ref" in schema:
@@ -79,3 +64,6 @@ def get_oneof_variants(schema):
         type_name = resolved["properties"]["type"]["const"]
         variants.append((type_name, resolved))
     return variants
+
+def get_pipeline_modules():
+    return list(PIPELINE_SCHEMA["properties"].keys())

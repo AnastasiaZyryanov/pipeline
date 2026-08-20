@@ -1,7 +1,5 @@
 from ..core.module_base import PipelineModule
-import importlib
-import sys
-import os
+
 
 class Cleaner(PipelineModule):
     def run(self): pass
@@ -31,6 +29,9 @@ class CleanerWithScript(Cleaner):
         if not os.path.exists(path):
                 raise FileNotFoundError(f"The {path} does not exist.")
         module_name="user_module_"+os.path.basename(path).split('.')[0]
+        import importlib
+        import sys
+        import os
         spec=importlib.util.spec_from_file_location(module_name, path)
         module=importlib.util.module_from_spec(spec)
         sys.modules[module_name]=module

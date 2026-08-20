@@ -1,7 +1,4 @@
-from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-import pandas as pd
 import nltk
 from ..core.module_base import PipelineModule
 nltk.download('punkt_tab')
@@ -52,8 +49,10 @@ class SentenceChunkerFunction(Chunker):
 
         return data
     
+from sentence_transformers import SentenceTransformer
+    
 class SemanticChunkerFunction(Chunker):
-    def __init__(self, embedding_model, percentile, overlap, language=None, max_tokens=450):
+    def __init__(self, embedding_model, percentile, overlap, language=None, max_tokens=450):        
         self.embedding_model = SentenceTransformer(embedding_model, trust_remote_code = True)
         self.percentile=percentile
         self.overlap=overlap
@@ -75,7 +74,6 @@ class SemanticChunkerFunction(Chunker):
         return chunks
 
     def combine_sentences(self, sentences):
-        """Combine sentences into groups of three, with the first and last sentences combined with their neighbors."""
         if len(sentences) < 2:
             yield from sentences
             return
@@ -87,12 +85,9 @@ class SemanticChunkerFunction(Chunker):
         
         yield ' '.join((sentences[-2], sentences[-1]))
 
-    def split_text(self, text):
-        """Split text by phrases, sentences, or paragraphs."""
-        #sentences = re.split(r'(?<=[.?!])\s+', text)        
+    def split_text(self, text):      
         sentences = nltk.tokenize.sent_tokenize(text, language=self.language) if self.language else nltk.tokenize.sent_tokenize(text)
         
-        # Convert newlines to spaces and remove extra spaces
         return [s.replace('\n', ' ').strip() for s in sentences]
 
 
@@ -101,11 +96,10 @@ class SemanticChunkerFunction(Chunker):
             encodings = model.encode(couple, prompt_name='Clustering')
             yield 1 - model.similarity(encodings[0], encodings[1]).item()
         
-        yield np.nan  # To handle the last sentence without a next one
+        yield np.nan  
 
 
     def calculate_breakpoints(self, distances, threshold):
-        """Calculate breakpoints based on distances and a threshold."""
         return [0] + [i for i, d in enumerate(distances, start=1) if d > threshold] + [len(distances)]
 
 

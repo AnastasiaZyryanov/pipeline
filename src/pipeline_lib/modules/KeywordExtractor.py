@@ -1,9 +1,3 @@
-from keybert import KeyBERT
-from sentence_transformers import SentenceTransformer
-from keybert.llm import OpenAI
-from keybert import KeyBERT, KeyLLM
-from sentence_transformers import SentenceTransformer
-import torch
 from ..core.module_base import PipelineModule
 
 class KeywordExtractor(PipelineModule):
@@ -42,9 +36,12 @@ class KEwithKeyBERT(KeywordExtractor):
     def __init__(self, runner,  embedding_model, top_n, keyphrase_size, stopwords, min_df, system_prompt=None, user_template=None, seed_keywords=None, 
                  use_maxsum=None, use_mmr=None, diversity=0.5, nr_candidates=20):
         model_name = embedding_model["name"]
-        dtype_str = embedding_model.get("dtype", "float32")
+        dtype_str = embedding_model.get("dtype", "float32")        
+        import torch
         dtype = torch.float16 if dtype_str == "float16" else torch.float32
         device = embedding_model.get("device", "cuda")
+        from keybert import KeyBERT
+        from sentence_transformers import SentenceTransformer
         self.embedding_model = SentenceTransformer(model_name,model_kwargs={"dtype": dtype}, device=device)
         self.kw_model = KeyBERT(model=self.embedding_model)
         self.top_n=top_n

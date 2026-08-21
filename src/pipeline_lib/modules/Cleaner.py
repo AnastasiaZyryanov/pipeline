@@ -26,12 +26,13 @@ class CleanerWithScript(Cleaner):
         return data
         
     def  load_function_from__file(self, path, function_name):
-        if not os.path.exists(path):
-                raise FileNotFoundError(f"The {path} does not exist.")
-        module_name="user_module_"+os.path.basename(path).split('.')[0]
         import importlib
         import sys
         import os
+        if not os.path.exists(path):
+                raise FileNotFoundError(f"The {path} does not exist.")
+        module_name="user_module_"+os.path.basename(path).split('.')[0]
+        
         spec=importlib.util.spec_from_file_location(module_name, path)
         module=importlib.util.module_from_spec(spec)
         sys.modules[module_name]=module

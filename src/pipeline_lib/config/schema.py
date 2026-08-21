@@ -75,7 +75,7 @@ PIPELINE_SCHEMA = {
           "embedding_model": { "type": "string",
                               "description": "Name of the sentence‑transformer model, e.g.'all-MiniLM-L6-v2' or 'sentence-transformers/all-mpnet-base-v2'" },          
           "percentile": { "type": "number",
-                         "description": "Threshold for detecting semantic breakpoints between chunks. Lower values produce more chunks, while higher values produce larger chunks. Typical range: 0.5–0.9." },
+                         "description": "Threshold for detecting semantic breakpoints between chunks. Lower values produce more chunks, while higher values produce larger chunks. Typical range: 50-90." },
           "overlap": { "type": "integer",
                       "description": "Number of tokens to overlap between consecutive chunks. Usually set between 0 and 50" },
           "language": { "type": "string", 
@@ -97,18 +97,33 @@ PIPELINE_SCHEMA = {
           "type": { "const": "NoClean" }
         },
         "required": ["type"]
-      },
+      },      
       "CleanerWithScript": {
         "type": "object",
         "properties": {
-          "type": { "const": "CleanerWithScript" },
-          "script": { "type": "string",
-                     "description": "Path to the Python script" },
-          "entrypoint": { "type": "string",
-                        "description": "Name of the cleaning function inside the script to be called" }
+            "type": {
+                "const": "CleanerWithScript"
+            },
+            "script": {
+                "type": "string",
+                "description": "Path to the Python script. Leave empty to use the default script 'scripts/clean.py'."
+            },
+            "entrypoint": {
+                "type": "string",
+                "description": "Name of the cleaning function inside the script. Leave empty to use the default function 'clean'."
+            }
         },
-        "required": ["type", "script","entrypoint"]
-      },
+        "required": ["type"],
+        "oneOf": [
+              { "not": {"anyOf": [
+                          {"required": ["script"]},
+                          {"required": ["entrypoint"]}
+                      ]
+                    }
+                },
+              {"required": ["script", "entrypoint"]}
+          ]        
+        },
       "Cleaner": {
         "oneOf": [
           { "$ref": "#/$defs/NoClean" },

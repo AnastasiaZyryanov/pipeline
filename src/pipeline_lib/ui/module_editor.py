@@ -3,7 +3,6 @@ from ..config.schema_utils import *
 from jsonschema import Draft7Validator
 from ..config.schema import PIPELINE_SCHEMA
 
-
 def show_parameter(path, parameter, parameter_schema, cfg, required=False, config_version=0):        
     parameter_schema = resolve_schema(parameter_schema)
     value = cfg.get(parameter)
@@ -36,9 +35,7 @@ def show_module(module_name, config, config_version, mode):
     available = get_available_types(module_schema)
     if module_name not in config:
         if mode == "Create new configuration":
-            config[module_name] = {
-                "type": available[0]
-            }
+            config[module_name] = {"type": available[0]}
             st.rerun()
         else:
             st.warning("This module is not configured yet.")
@@ -187,7 +184,6 @@ def show_boolean_parameter(label,key,value,cfg,parameter, required=False, help="
             index = 1
         else:
             index = 2
-
         new_value = st.selectbox(label, options, index=index, key=key, help=help)
         if new_value == "<not specified>":
             cfg.pop(parameter, None)
@@ -206,32 +202,23 @@ def show_oneof(path, parameter, parameter_schema, cfg, config_version=0, help=""
     if not available:
         st.error(f"{parameter}: no variants found")
         return
-
     with st.container(border=True):
         st.markdown(f"**{parameter}**")  
         if help:
             st.caption(help)
-
         nested_cfg = cfg.setdefault(parameter, {})
         current = nested_cfg.get("type")
         if current not in available:
             current = available[0]
         key = f"{config_version}.{path}.{parameter}"
-        selected = st.selectbox(
-            "Type",  
-            available,
-            index=available.index(current),
-            key=key
-        )
+        selected = st.selectbox("Type",  available, index=available.index(current), key=key)
         if selected != current:
             nested_cfg.clear()
             nested_cfg["type"] = selected
             st.rerun()
-
         selected_schema = get_schema_for_type(parameter_schema, selected)
         properties = get_properties(selected_schema)
         required_parameters = selected_schema.get("required", [])
-
         for child, child_schema in properties.items():
             if child == "type":
                 continue            
@@ -244,17 +231,13 @@ def show_oneof(path, parameter, parameter_schema, cfg, config_version=0, help=""
                 config_version=config_version
             )
 
-
-
 def show_array_parameter(path, parameter, cfg, required=False, config_version=0, help=""):
     values = cfg.get(parameter, [])
     with st.container(border=True):
         st.markdown(f"**{parameter}**")
-
         for i, value in enumerate(values):
             col1, col2 = st.columns([0.8, 0.2])
             key_edit = f"{config_version}.{path}.{parameter}.{i}"
-
             with col1:
                 new_val = st.text_input(
                     f"Item {i+1}",
@@ -264,7 +247,6 @@ def show_array_parameter(path, parameter, cfg, required=False, config_version=0,
                     help=help
                 )
                 values[i] = new_val
-
             with col2:
                 if st.button("✕", key=f"{config_version}.{path}.{parameter}.remove.{i}"):
                     values.pop(i)
@@ -285,7 +267,6 @@ def show_array_parameter(path, parameter, cfg, required=False, config_version=0,
                 label_visibility="collapsed", 
                 help=help           
             )
-
         with col2:
             if st.button("Add", key=f"{config_version}.{path}.{parameter}.add"):
                 if new_value.strip():
@@ -293,7 +274,6 @@ def show_array_parameter(path, parameter, cfg, required=False, config_version=0,
                     cfg[parameter] = values
                     st.session_state[array_version_key] += 1
                     st.rerun()
-
         if values:
             cfg[parameter] = values
         elif not required:

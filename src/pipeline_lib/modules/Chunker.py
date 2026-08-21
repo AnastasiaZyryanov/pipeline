@@ -7,8 +7,6 @@ class Chunker(PipelineModule):
     def run(self): pass
 
     def _split_long_chunk(self, text, max_tokens): 
-        # Approximate token estimation:1 token ≈ 0.75 words,  1 word ≈ 1.33 tokens
-        # Exact tokenization depends on the model tokenizer. 
         words = text.split()
         estimated_tokens = len(words) * 1.33
 
@@ -66,7 +64,7 @@ class SemanticChunkerFunction(Chunker):
         data['sentences'] = data['comment'].astype(str).apply(self.split_text)
         data['combined'] = data['sentences'].apply(lambda x: list(self.combine_sentences(x)))
         data['distances'] = data['combined'].apply(lambda x: list(self.distance_to_next(x, self.embedding_model)))
-        breakpoint_threshold = np.nanpercentile(data['distances'].explode().values, 75)
+        breakpoint_threshold = np.nanpercentile(data['distances'].explode().values, self.percentile)
         data['breakpoints'] = data['distances'].apply(lambda x: self.calculate_breakpoints(x, breakpoint_threshold))
         data["comment"] = data.index
         data['chunk'] = data.apply(lambda row: self.create_chunks(row['breakpoints'], row['sentences']), axis=1)
@@ -76,26 +74,21 @@ class SemanticChunkerFunction(Chunker):
     def combine_sentences(self, sentences):
         if len(sentences) < 2:
             yield from sentences
-            return
-        
+            return        
         yield ' '.join((sentences[0], sentences[1]))
-
         for i in range(1, len(sentences)-1):
-            yield ' '.join(sentences[i-1:i+2])
-        
+            yield ' '.join(sentences[i-1:i+2])        
         yield ' '.join((sentences[-2], sentences[-1]))
 
     def split_text(self, text):      
-        sentences = nltk.tokenize.sent_tokenize(text, language=self.language) if self.language else nltk.tokenize.sent_tokenize(text)
-        
+        sentences = nltk.tokenize.sent_tokenize(text, language=self.language) if self.language else nltk.tokenize.sent_tokenize(text)        
         return [s.replace('\n', ' ').strip() for s in sentences]
 
 
     def distance_to_next(self, sentences, model: SentenceTransformer):
         for couple in zip(sentences, sentences[1:]):
             encodings = model.encode(couple, prompt_name='Clustering')
-            yield 1 - model.similarity(encodings[0], encodings[1]).item()
-        
+            yield 1 - model.similarity(encodings[0], encodings[1]).item()        
         yield np.nan  
 
 
@@ -108,10 +101,8 @@ class SemanticChunkerFunction(Chunker):
             ' '.join(sentences[start:end])
             for start, end in zip(breakpoints, breakpoints[1:])
         ]
-
         final_chunks = []
         for chunk in raw_chunks:
             split_chunks = self._split_long_chunk(chunk, self.max_tokens)
             final_chunks.extend(split_chunks)
-
         return final_chunks

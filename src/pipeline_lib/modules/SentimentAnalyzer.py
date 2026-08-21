@@ -95,8 +95,6 @@ class SAwithAttention(SentimentAnalyzer):
             if n > 512:
                 print(f"OVERFLOW: chunk {i} -> {n}")
 
-        #print("Max tokens:", max_len)
-
         results = self.classifier(documents)
         label_map = {
             "negative": "Negative",

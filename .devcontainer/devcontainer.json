@@ -10,7 +10,7 @@
 
 	"containerEnv": {
 		"UV_LINK_MODE": "copy",
-		"NVIDIA_VISIBLE_DEVICES": "1",
+		"NVIDIA_VISIBLE_DEVICES": "8",
 		"HF_HOME": "/huggingface"
 	},
 

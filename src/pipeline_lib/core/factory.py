@@ -6,7 +6,6 @@ from pipeline_lib.modules.LLMRunner import OllamaRunner, VLLMRunner
 
 MODULE_REGISTRY = {
     "OllamaRunner": lambda cfg: (
-        #print("Creating OllamaRunner") or
         OllamaRunner(
             model=cfg["model"],
             api_key=cfg.get("api_key"),
@@ -14,7 +13,6 @@ MODULE_REGISTRY = {
             )
     ),    
     "VLLMRunner": lambda cfg: (
-        #print("Creating VLLMRunner") or
         VLLMRunner(
             model=cfg["model"],
             api_key=cfg.get("api_key"),
@@ -36,8 +34,8 @@ MODULE_REGISTRY = {
     ),
     "NoClean": lambda cfg: NoClean(),
     "CleanerWithScript": lambda cfg: CleanerWithScript(
-        script=cfg["script"],
-        entrypoint=cfg["entrypoint"],
+        script=cfg.get("script", "script/clean.py"),
+        entrypoint=cfg.get("entrypoint", "clean")
     ),
      "SAwithAttention": lambda cfg: SAwithAttention(
         model=cfg.get("model")

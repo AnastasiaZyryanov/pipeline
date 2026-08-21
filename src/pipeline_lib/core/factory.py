@@ -34,7 +34,7 @@ MODULE_REGISTRY = {
     ),
     "NoClean": lambda cfg: NoClean(),
     "CleanerWithScript": lambda cfg: CleanerWithScript(
-        script=cfg.get("script", "script/clean.py"),
+        script=cfg.get("script", "scripts/clean.py"),
         entrypoint=cfg.get("entrypoint", "clean")
     ),
      "SAwithAttention": lambda cfg: SAwithAttention(

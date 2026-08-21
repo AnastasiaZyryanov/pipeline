@@ -46,7 +46,7 @@ PIPELINE_SCHEMA = {
               "gpu": { "type": "string",
                       "description": "GPU device to use" },
               "port": { "type": "string",
-                       "description": "Network port for the vLLM server (e.g.'8000', '8080')"}
+                       "description": "Network port for the vLLM server (e.g.'8000', '8001')"}
             },
             "required": ["type"]
           }
